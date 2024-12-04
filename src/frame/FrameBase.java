@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 
 import static common.FrameConstant.*;
 import static frame.Element.MAIN_PANEL;
+import static frame.Element.TEST_LABEL;
 
 public class FrameBase extends JFrame implements ActionListener {
 
@@ -46,7 +47,7 @@ public class FrameBase extends JFrame implements ActionListener {
         setLayout(new BorderLayout());
 
         init();
-
+        MAIN_PANEL.add(TEST_LABEL);
         add(MAIN_PANEL, BorderLayout.CENTER);
 
         setVisible(true);
@@ -55,11 +56,20 @@ public class FrameBase extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // System.out.println("?");
+        example();
     }
 
-    private void init(){
-        try{
+    private void example() {
+        Point labelPoint = TEST_LABEL.getLocationOnScreen();
+        Point panelPoint = MAIN_PANEL.getLocationOnScreen();
+        int x = 5 - (int) (Math.random() * 10);
+        int y = 5 - (int) (Math.random() * 10);
+        TEST_LABEL.setLocation(labelPoint.x - panelPoint.x + x, labelPoint.y - panelPoint.y + y);
+        this.repaint();
+    }
+
+    private void init() {
+        try {
             Method[] methods = InitElement.class.getDeclaredMethods();
             InitElement initElement = InitElement.class.getConstructor().newInstance();
             // 遍历所有方法，找到标记了 @InitMethod 注解的方法并调用
