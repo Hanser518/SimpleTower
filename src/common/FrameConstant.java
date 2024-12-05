@@ -8,7 +8,11 @@ public interface FrameConstant {
 
     Double HALF_SCREEN = 0.5;
 
-    Integer FRAME_REFRESH_INTERVAL = 60;
+    Integer FRAME_REFRESH_INTERVAL = 120;
 
     Font MAIN_FONT = new Font("Microsoft YaHei", Font.BOLD, 15);
+
+    Color ROAD_COLOR = new Color(182, 181, 181);
+
+    Color WALL_COLOR = new Color(110, 57, 26);
 }

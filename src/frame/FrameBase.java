@@ -1,6 +1,7 @@
 package frame;
 
 import frame.annotation.InitMethod;
+import frame.component.TargetComponent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,7 +20,7 @@ public class FrameBase extends JFrame implements ActionListener {
     private static Integer frameWidth;
     private static Integer frameHeight;
 
-
+    //FRAME_REFRESH_INTERVAL
     private Timer freshTimer = new Timer(1000 / FRAME_REFRESH_INTERVAL, this);
 
 
@@ -46,17 +47,33 @@ public class FrameBase extends JFrame implements ActionListener {
         setLayout(new BorderLayout());
 
         init();
-        MAIN_PANEL.add(TEST_LABEL);
-        MAIN_PANEL.add(TEST_PANEL);
+//        MAIN_PANEL.add(TEST_LABEL);
+//        MAIN_PANEL.add(TEST_PANEL);
         add(MAIN_PANEL, BorderLayout.CENTER);
+        add(componentCount, BorderLayout.NORTH);
 
+//        JPanel[][] panelMatrix = getPanelMatrix(30, 15);
+//        int w = panelMatrix[0][0].getWidth();
+//        int h = panelMatrix[0][0].getHeight();
+//        for(int i = 0;i < panelMatrix.length; i++){
+//            for(int j = 0;j < panelMatrix[i].length; j++){
+//                panelMatrix[i][j].setBounds(i * w, j * h, w, h);
+//                MAIN_PANEL.add(panelMatrix[i][j]);
+//            }
+//        }
         setVisible(true);
         freshTimer.start();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        example();
+        // example();
+        TargetComponent panel = new TargetComponent();
+        panel.setBounds((int) (Math.random() * frameWidth), (int) (Math.random() * 20), 20, 60);
+        panel.setBackground(new Color((int) (Math.random() * 69 + 20), (int) (Math.random() * 69 + 20), (int) (Math.random() * 169 + 20), 110));
+        MAIN_PANEL.add(panel);
+        panel.register();
+        componentCount.setText("Count:" + TargetComponent.getComponentsCount());
     }
 
     private void example() {
@@ -83,5 +100,6 @@ public class FrameBase extends JFrame implements ActionListener {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        TargetComponent.initializeGlobalTimer();
     }
 }
