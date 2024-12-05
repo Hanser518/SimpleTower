@@ -1,7 +1,7 @@
 package frame;
 
 import frame.annotation.InitMethod;
-import frame.component.TargetComponent;
+import frame.component.ParticleComponent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -68,12 +68,12 @@ public class FrameBase extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         // example();
-        TargetComponent panel = new TargetComponent();
-        panel.setBounds((int) (Math.random() * frameWidth), (int) (Math.random() * 20), 20, 60);
-        panel.setBackground(new Color((int) (Math.random() * 69 + 20), (int) (Math.random() * 69 + 20), (int) (Math.random() * 169 + 20), 110));
+        ParticleComponent panel = new ParticleComponent();
+        panel.setBounds((int) (Math.random() * frameWidth), (int) (Math.random() * 20), (int) (Math.random() * 100), (int) (Math.random() * 100));
+        panel.setBackground(new Color((int) (Math.random() * 189 + 20), (int) (Math.random() * 169 + 20), (int) (Math.random() * 169 + 20), 110));
         MAIN_PANEL.add(panel);
         panel.register();
-        componentCount.setText("Count:" + TargetComponent.getComponentsCount());
+        componentCount.setText("Count:" + ParticleComponent.getComponentsCount());
     }
 
     private void example() {
@@ -100,6 +100,6 @@ public class FrameBase extends JFrame implements ActionListener {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        TargetComponent.initializeGlobalTimer();
+        ParticleComponent.initializeGlobalTimer();
     }
 }
