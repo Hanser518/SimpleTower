@@ -10,7 +10,7 @@ public interface FrameConstant {
 
     Integer FRAME_REFRESH_INTERVAL = 60;
 
-    Integer UNIT_MOVE_COUNT = 6;
+    Integer UNIT_MOVE_COUNT = 12;
 
     Integer UNIT_SIZE = 36;
 

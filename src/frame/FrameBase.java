@@ -68,6 +68,7 @@ public class FrameBase extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        componentCount.setText("COUNT: " + TargetComponent.components.size());
         this.repaint();
     }
 

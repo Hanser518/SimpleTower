@@ -13,6 +13,10 @@ import java.awt.event.MouseEvent;
 import static common.FrameConstant.*;
 
 public class SceneComponent extends JPanel {
+    /**
+     * 设置全局刷新率
+     */
+    private static final int UPDATE_DELAY = 2 * 1000;
 
     private int sceneWidth, sceneHeight;
 
@@ -20,12 +24,35 @@ public class SceneComponent extends JPanel {
 
     private JPanel[][] panelMatrix;
 
-    private Point sp = null;
+    private Point sp = null, ep = null;
+
+    /**
+     * 设置全局定时器
+     */
+    private Timer sceneTimer;
 
     public SceneComponent(int width, int height) {
         super(null);
         initScene(width, height);
         initContent();
+        initTimer();
+    }
+
+    private void initTimer() {
+        JPanel scene = this;
+        if (sceneTimer == null) {
+            sceneTimer = new Timer(UPDATE_DELAY, e -> {
+                if (ep != null && sp != null){
+                    TargetComponent.initializeGlobalTimer(sceneMatrix);
+                    TargetComponent TC = new TargetComponent();
+                    TC.setBounds(sp.x * UNIT_SIZE, sp.y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
+                    TC.setBackground(new Color(169, 69, 89));
+                    TC.register(scene, sp, ep);
+                    add(TC);
+                }
+            });
+        }
+        sceneTimer.start();
     }
 
     private void initScene(int width, int height) {
@@ -69,6 +96,7 @@ public class SceneComponent extends JPanel {
                             // 非常狠毒的一行代码，使我方块来回跳跃
                             // sceneMatrix[x][y] = -1;
                         } else {
+                            ep = new Point(x, y);
                             panelMatrix[x][y].setBackground(new Color(211, 10, 10, 142));
                             TargetComponent.initializeGlobalTimer(sceneMatrix);
                             TargetComponent TC = new TargetComponent();
@@ -76,7 +104,6 @@ public class SceneComponent extends JPanel {
                             TC.setBackground(new Color(169, 69, 89));
                             TC.register(scene, sp, new Point(x, y));
                             add(TC);
-                            sp = null;
                         }
                     }
                 } else if (SwingUtilities.isLeftMouseButton(e)) {
