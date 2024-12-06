@@ -5,6 +5,9 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 粒子组件-ParticleComponent
+ */
 import static common.FrameConstant.FRAME_REFRESH_INTERVAL;
 
 public class ParticleComponent extends JPanel {
@@ -24,22 +27,25 @@ public class ParticleComponent extends JPanel {
      */
     private static final ArrayList<ParticleComponent> components = new ArrayList<>();
     private static final ArrayList<ParticleComponent> removeComponents = new ArrayList<>();
+
     /**
      * Type
      */
     private int type;
 
     /**
-     * Type
+     * speedX
      */
     private int speedX;
 
     /**
-     * Type
+     * speedY
      */
     private int speedY;
 
-    private int state;
+    public ParticleComponent(){
+        super(null);
+    }
 
     /**
      * 注册组件
@@ -80,7 +86,7 @@ public class ParticleComponent extends JPanel {
             case 3 -> setLocation(location.x + speedX, location.y + speedY);
             case 4 -> setLocation(location.x - speedX, location.y + speedY);
         }
-        if (location.x < 0 || location.x > 3000 || location.y < 0 || location.y > 2000) {
+        if (location.x < -this.getWidth() || location.x > 3000 || location.y < -this.getHeight() || location.y > 2000) {
             removeComponents.add(this);
         }
         repaint(); // 可选：重绘以更新视觉效果

@@ -2,6 +2,8 @@ package frame;
 
 import frame.annotation.InitMethod;
 import frame.component.ParticleComponent;
+import frame.component.SceneComponent;
+import frame.component.TargetComponent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.lang.reflect.Method;
 
 import static common.FrameConstant.*;
+
 import static frame.Element.*;
 
 public class FrameBase extends JFrame implements ActionListener {
@@ -47,43 +50,24 @@ public class FrameBase extends JFrame implements ActionListener {
         setLayout(new BorderLayout());
 
         init();
-//        MAIN_PANEL.add(TEST_LABEL);
-//        MAIN_PANEL.add(TEST_PANEL);
+//        TargetComponent target = new TargetComponent();
+//        target.setBounds(10, 10, 30, 30);
+//        target.setBackground(new Color(167, 56, 80));
+//        MAIN_PANEL.add(target);
+//        target.register(new Point(1, 1), new Point(ZERO_ONE_MATRIX.length - 2, ZERO_ONE_MATRIX[0].length - 2));
+
+        MAIN_PANEL.add(new SceneComponent(10, 7));
+
         add(MAIN_PANEL, BorderLayout.CENTER);
         add(componentCount, BorderLayout.NORTH);
 
-//        JPanel[][] panelMatrix = getPanelMatrix(30, 15);
-//        int w = panelMatrix[0][0].getWidth();
-//        int h = panelMatrix[0][0].getHeight();
-//        for(int i = 0;i < panelMatrix.length; i++){
-//            for(int j = 0;j < panelMatrix[i].length; j++){
-//                panelMatrix[i][j].setBounds(i * w, j * h, w, h);
-//                MAIN_PANEL.add(panelMatrix[i][j]);
-//            }
-//        }
+
         setVisible(true);
         freshTimer.start();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // example();
-        ParticleComponent panel = new ParticleComponent();
-        panel.setBounds((int) (Math.random() * frameWidth), (int) (Math.random() * 20), (int) (Math.random() * 100), (int) (Math.random() * 100));
-        panel.setBackground(new Color((int) (Math.random() * 189 + 20), (int) (Math.random() * 169 + 20), (int) (Math.random() * 169 + 20), 110));
-        MAIN_PANEL.add(panel);
-        panel.register();
-        componentCount.setText("Count:" + ParticleComponent.getComponentsCount());
-    }
-
-    private void example() {
-        Point labelPoint = TEST_LABEL.getLocationOnScreen();
-        Point testPoint = TEST_PANEL.getLocationOnScreen();
-        Point panelPoint = MAIN_PANEL.getLocationOnScreen();
-        int x = 6 - (int) (Math.random() * 10);
-        int y = 6 - (int) (Math.random() * 10);
-        TEST_LABEL.setLocation(labelPoint.x - panelPoint.x + x, labelPoint.y - panelPoint.y + y);
-        TEST_PANEL.setLocation(testPoint.x - panelPoint.x + y, testPoint.y - panelPoint.y + x);
         this.repaint();
     }
 
@@ -101,5 +85,7 @@ public class FrameBase extends JFrame implements ActionListener {
             throw new RuntimeException(e);
         }
         ParticleComponent.initializeGlobalTimer();
+        getPanelMatrix(10, 10);
+        TargetComponent.initializeGlobalTimer(ZERO_ONE_MATRIX);
     }
 }

@@ -48,7 +48,7 @@ public class BuildMap {
      * @param visitArr 访问轨迹
      * @return
      */
-    public static int getNextDirection(Point location, boolean[][] visitArr) {
+    private static int getNextDirection(Point location, boolean[][] visitArr) {
         List<Integer> dirBackup = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
             Point p = getNextPoint(location, i);
@@ -73,7 +73,7 @@ public class BuildMap {
      * @param dir
      * @return
      */
-    public static Point getNextPoint(Point location, int dir) {
+    private static Point getNextPoint(Point location, int dir) {
         int nx = location.x;
         int ny = location.y;
         switch (dir) {
@@ -95,7 +95,7 @@ public class BuildMap {
      * @param location
      * @param dir
      */
-    public static void buildPath(int[][] map, Point location, int dir) {
+    private static void buildPath(int[][] map, Point location, int dir) {
         int totalDirections = map[0][0] & 0x4;
         int antDir = (dir + totalDirections / 2) % totalDirections;
         // System.out.println(totalDirections + " " + dir + " " + antDir + " " + (totalDirections + 1 - dir) + " " + (totalDirections + 1 - antDir));
