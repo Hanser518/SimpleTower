@@ -25,7 +25,7 @@ public class TargetComponent extends JPanel {
     /**
      * 设置组件列表
      */
-    private static final ArrayList<TargetComponent> components = new ArrayList<>();
+    public static final ArrayList<TargetComponent> components = new ArrayList<>();
 
     /**
      * 待移除组件列表
@@ -45,7 +45,11 @@ public class TargetComponent extends JPanel {
     /**
      * 点位标识
      */
-    private Direction Location;
+    private Direction targetLocation;
+
+    public Direction getTargetLocation() {
+        return targetLocation;
+    }
 
     /**
      * 帧位移量
@@ -60,6 +64,21 @@ public class TargetComponent extends JPanel {
     /**
      *
      */
+    private static JPanel container = null;
+
+    /**
+     * focus
+     */
+    private boolean focus = false;
+
+    /**
+     * state
+     */
+    private boolean aliveState = true;
+
+    /**
+     *
+     */
     public TargetComponent() {
         super(null);
     }
@@ -67,10 +86,11 @@ public class TargetComponent extends JPanel {
     /**
      *
      */
-    public void register(Point start, Point end) {
+    public void register(JPanel panel, Point start, Point end) {
+        container = panel;
         // 计算路径、初始化点位
         motionPath = BuildSolution.getMapWay(mapMatrix, start, end);
-        Location = motionPath.get(0);
+        targetLocation = motionPath.get(0);
         // 获取帧位移量
         frameMotionValue = FRAME_REFRESH_INTERVAL / UNIT_MOVE_COUNT;
         components.add(this);
@@ -86,6 +106,7 @@ public class TargetComponent extends JPanel {
                 }
                 for (TargetComponent component : removeComponents) {
                     components.remove(component);
+                    container.remove(component);
                 }
                 removeComponents.clear();
             });
@@ -97,7 +118,7 @@ public class TargetComponent extends JPanel {
         // 获取当前坐标
         Point location = getLocation();
         // 获取移动方向
-        int dir = Location.direction;
+        int dir = targetLocation.direction;
         int moveDist;
         switch (dir) {
             case 0, 2 -> {
@@ -114,13 +135,25 @@ public class TargetComponent extends JPanel {
         motionValue += frameMotionValue;
         if (motionValue == FRAME_REFRESH_INTERVAL) {
             motionValue = 0;
-            int index = motionPath.indexOf(Location);
+            int index = motionPath.indexOf(this.targetLocation);
             if (index == motionPath.size() - 1) {
                 removeComponents.add(this);
+                aliveState = false;
             } else {
-                Location = motionPath.get(index + 1);
+                this.targetLocation = motionPath.get(index + 1);
             }
         }
     }
 
+    public void setFocus() {
+        focus = true;
+    }
+
+    public boolean isFocus() {
+        return focus;
+    }
+
+    public boolean isAliveState() {
+        return aliveState;
+    }
 }

@@ -1,5 +1,6 @@
 package frame.component;
 
+import entity.Direction;
 import method.map.BuildMap;
 import method.map.TransMap;
 
@@ -10,7 +11,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import static common.FrameConstant.*;
-import static frame.Element.MAIN_PANEL;
 
 public class SceneComponent extends JPanel {
 
@@ -22,13 +22,13 @@ public class SceneComponent extends JPanel {
 
     private Point sp = null;
 
-    public SceneComponent(int width, int height){
+    public SceneComponent(int width, int height) {
         super(null);
         initScene(width, height);
         initContent();
     }
 
-    private void initScene(int width, int height){
+    private void initScene(int width, int height) {
         sceneMatrix = BuildMap.getMap(width, height);
         sceneMatrix = TransMap.getTransMatrix(sceneMatrix);
         sceneWidth = sceneMatrix.length;
@@ -36,7 +36,7 @@ public class SceneComponent extends JPanel {
         this.setBounds(0, 0, sceneWidth * UNIT_SIZE, sceneHeight * UNIT_SIZE);
     }
 
-    private void initContent(){
+    private void initContent() {
         panelMatrix = new JPanel[sceneWidth][sceneHeight];
         for (int i = 0; i < panelMatrix.length; i++) {
             for (int j = 0; j < panelMatrix[i].length; j++) {
@@ -56,13 +56,14 @@ public class SceneComponent extends JPanel {
         }
     }
 
-    private void addFunctionClickTarget(JPanel panel, int x, int y){
+    private void addFunctionClickTarget(JPanel panel, int x, int y) {
+        JPanel scene = this;
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                if (SwingUtilities.isLeftMouseButton(e)) {
-                    if (sceneMatrix[x][y] != 1){
-                        if (sp == null){
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    if (sceneMatrix[x][y] != 1) {
+                        if (sp == null) {
                             sp = new Point(x, y);
                             panelMatrix[x][y].setBackground(new Color(69, 109, 169, 129));
                             // 非常狠毒的一行代码，使我方块来回跳跃
@@ -73,13 +74,45 @@ public class SceneComponent extends JPanel {
                             TargetComponent TC = new TargetComponent();
                             TC.setBounds(sp.x * UNIT_SIZE, sp.y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
                             TC.setBackground(new Color(169, 69, 89));
-                            TC.register(sp, new Point(x, y));
+                            TC.register(scene, sp, new Point(x, y));
                             add(TC);
                             sp = null;
                         }
+                    }
+                } else if (SwingUtilities.isLeftMouseButton(e)) {
+                    if (sceneMatrix[x][y] == 1) {
+                        System.out.println("TOWER!");
+                        TowerComponent.initializeGlobalTimer();
+                        TowerComponent TC = new TowerComponent(0);
+                        TC.setBounds(x * UNIT_SIZE, y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
+                        // TC.setBackground(new Color(169, 69, 89));
+                        TC.register(scene, new Point(x, y), 1);
+                        add(TC);
                     }
                 }
             }
         });
     }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (!TowerComponent.components.isEmpty()) {
+            for (TowerComponent component : TowerComponent.components) {
+                if (component.getTargetComponent() != null && component.getTargetComponent().isAliveState()) {
+                    Point towerLocation = component.getLocation();
+                    Point targetLocation = component.getTargetComponent().getLocation();
+
+                    int towerW = component.getWidth();
+                    int towerH = component.getHeight();
+                    int targetW = component.getTargetComponent().getWidth();
+                    int targetH = component.getTargetComponent().getHeight();
+
+                    g.setColor(new Color(28, 54, 124, 255));
+                    g.drawLine(towerLocation.x + towerW / 2, towerLocation.y + towerH / 2, targetLocation.x + targetW / 2, targetLocation.y + targetH / 2);
+                }
+            }
+        }
+    }
+
 }
