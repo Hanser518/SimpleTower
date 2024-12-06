@@ -46,7 +46,7 @@ public class SceneComponent extends JPanel {
                     TargetComponent.initializeGlobalTimer(sceneMatrix);
                     TargetComponent TC = new TargetComponent();
                     TC.setBounds(sp.x * UNIT_SIZE, sp.y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-                    TC.setBackground(new Color(169, 69, 89));
+                    TC.setBackground(new Color(242, 26, 69, 135));
                     TC.register(scene, sp, ep);
                     add(TC);
                 }
@@ -90,20 +90,17 @@ public class SceneComponent extends JPanel {
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e)) {
                     if (sceneMatrix[x][y] != 1) {
-                        if (sp == null) {
+                        if (sp == null && ep == null) {
                             sp = new Point(x, y);
                             panelMatrix[x][y].setBackground(new Color(69, 109, 169, 129));
                             // 非常狠毒的一行代码，使我方块来回跳跃
                             // sceneMatrix[x][y] = -1;
-                        } else {
+                        } else if (sp != null && ep == null){
                             ep = new Point(x, y);
                             panelMatrix[x][y].setBackground(new Color(211, 10, 10, 142));
-                            TargetComponent.initializeGlobalTimer(sceneMatrix);
-                            TargetComponent TC = new TargetComponent();
-                            TC.setBounds(sp.x * UNIT_SIZE, sp.y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-                            TC.setBackground(new Color(169, 69, 89));
-                            TC.register(scene, sp, new Point(x, y));
-                            add(TC);
+                        } else {
+                            sp = new Point(x, y);
+                            panelMatrix[x][y].setBackground(new Color(69, 109, 169, 129));
                         }
                     }
                 } else if (SwingUtilities.isLeftMouseButton(e)) {
