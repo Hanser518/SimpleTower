@@ -2,6 +2,7 @@ package frame.component;
 
 import entity.Direction;
 import frame.pipeLine.GlobalMotionLine;
+import frame.pipeLine.GlobalParticleLine;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,7 +41,20 @@ public class TowerComponent extends JPanel {
      */
     private TargetComponent target = null;
 
+    /**
+     * atk value
+     */
     private Integer atkValue;
+
+    /**
+     * atk load
+     */
+    private int atkLoad = 0;
+
+    /**
+     * atk interval
+     */
+    private Integer atkInterval;
 
     public TargetComponent getTargetComponent() {
         return target;
@@ -63,6 +77,7 @@ public class TowerComponent extends JPanel {
     public void register(JPanel panel, Point location, int dir) {
         container = panel;
         this.towerLocation = new Direction(location, dir);
+        GlobalParticleLine.createParticle(container, this, this.getWidth());
         GlobalMotionLine.addToPrepareComponents(this);
     }
 
@@ -92,16 +107,26 @@ public class TowerComponent extends JPanel {
             if (prepare != null) {
                 prepare.setFocus(this);
                 target = prepare;
+                atkInterval = atkInterval == null ? 10 : atkInterval;
+                atkLoad = 0;
             }
         } else {
-            container.repaint();
+            if (atkLoad > atkInterval){
+                int targetValue = target.getRestValue(getAtkValue());
+                if (targetValue < 0) {
+                    target = null;
+                }
+                atkLoad = 0;
+            } else {
+                atkLoad ++;
+            }
         }
     }
 
-    public int getAtkValue(){
-        if (atkValue == null){
+    public int getAtkValue() {
+        if (atkValue == null) {
             return 1;
-        }else {
+        } else {
             return atkValue;
         }
     }

@@ -1,7 +1,7 @@
 package frame;
 
 import frame.annotation.InitMethod;
-import frame.component.ParticleComponent;
+import frame.pipeLine.GlobalParticleLine;
 import frame.component.SceneComponent;
 import frame.pipeLine.GlobalMotionLine;
 
@@ -57,10 +57,9 @@ public class FrameBase extends JFrame implements ActionListener {
 //        MAIN_PANEL.add(target);
 //        target.register(new Point(1, 1), new Point(ZERO_ONE_MATRIX.length - 2, ZERO_ONE_MATRIX[0].length - 2));
 
-        SceneComponent sc = new SceneComponent(10, 7);
+        SceneComponent sc = new SceneComponent(8, 6);
 
         MAIN_PANEL.add(sc);
-        GlobalMotionLine.addToPrepareComponents(sc);
 
         add(MAIN_PANEL, BorderLayout.CENTER);
         add(componentCount, BorderLayout.NORTH);
@@ -73,7 +72,6 @@ public class FrameBase extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         componentCount.setText("COUNT: " + components.size());
-        this.repaint();
     }
 
     private void init() {
@@ -89,9 +87,9 @@ public class FrameBase extends JFrame implements ActionListener {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        ParticleComponent.initializeGlobalTimer();
+        GlobalParticleLine.initializeGlobalTimer();
 
-        getPanelMatrix(10, 10);
+        // getPanelMatrix(10, 10);
 
         GlobalMotionLine.initializeGlobalTimer();
     }

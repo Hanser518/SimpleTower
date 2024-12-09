@@ -2,6 +2,7 @@ package frame.component;
 
 import entity.Direction;
 import frame.pipeLine.GlobalMotionLine;
+import frame.pipeLine.GlobalParticleLine;
 import method.map.BuildMap;
 import method.map.TransMap;
 
@@ -10,13 +11,23 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.Method;
 
 import static common.FrameConstant.*;
 import static frame.pipeLine.GlobalMotionLine.addToPrepareComponents;
 
 public class SceneComponent extends JPanel {
+    /**
+     * 设置全局刷新率
+     */
+    private static final int UPDATE_DELAY = 1000 / FRAME_REFRESH_INTERVAL;
 
-    private static final int interval = 20;
+    /**
+     * 设置全局定时器
+     */
+    private static Timer GLOBAL_TIMER;
+
+    private static final int interval = 60;
 
     private static int count = 0;
 
@@ -32,7 +43,17 @@ public class SceneComponent extends JPanel {
         super(null);
         initScene(width, height);
         initContent();
+        initTimer();
         TargetComponent.setMatrix(sceneMatrix);
+    }
+
+    private void initTimer() {
+        if (GLOBAL_TIMER == null) {
+            GLOBAL_TIMER = new Timer(UPDATE_DELAY, actionEvent -> {
+                motion();
+            });
+            GLOBAL_TIMER.start();
+        }
     }
 
     private void initScene(int width, int height) {
@@ -58,7 +79,7 @@ public class SceneComponent extends JPanel {
                 panelMatrix[i][j].setBackground(sceneMatrix[i][j] == 1 ? WALL_COLOR : ROAD_COLOR);
                 addFunctionClickTarget(panelMatrix[i][j], i, j);
 
-                this.add(panelMatrix[i][j]);
+                add(panelMatrix[i][j]);
             }
         }
     }
@@ -89,11 +110,12 @@ public class SceneComponent extends JPanel {
                         TowerComponent TC = new TowerComponent(0);
                         TC.setBounds(x * UNIT_SIZE, y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
                         // TC.setBackground(new Color(169, 69, 89));
-                        sceneMatrix[x][y] = 2;
+                        sceneMatrix[x][y] = 1;
                         TC.register(scene, new Point(x, y), 1);
-                        add(TC);
+                        scene.add(TC);
                     }
                 }
+                GlobalParticleLine.createParticle(scene, panel, panel.getWidth());
             }
         });
     }
@@ -130,11 +152,12 @@ public class SceneComponent extends JPanel {
             if (ep != null && sp != null) {
                 TargetComponent TC = new TargetComponent();
                 TC.setBounds(sp.x * UNIT_SIZE, sp.y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-                TC.setBackground(new Color(242, 26, 69, 135));
+                TC.setBackground(new Color(147, 44, 44, 255));
                 TC.register(scene, sp, ep);
-                add(TC);
+                scene.add(TC);
             }
             count = 0;
         }
+        repaint();
     }
 }

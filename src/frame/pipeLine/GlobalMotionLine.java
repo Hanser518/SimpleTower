@@ -64,7 +64,6 @@ public class GlobalMotionLine {
                 components.addAll(prepareComponents);
                 removeComponents.clear();
                 prepareComponents.clear();
-                System.out.println(COUNT + ": GLOBAL TIMER");
             });
             GLOBAL_TIMER.start();
         }

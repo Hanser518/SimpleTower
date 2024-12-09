@@ -2,6 +2,7 @@ package frame.component;
 
 import entity.Direction;
 import frame.pipeLine.GlobalMotionLine;
+import frame.pipeLine.GlobalParticleLine;
 import method.way.BuildSolution;
 
 import javax.swing.*;
@@ -64,11 +65,14 @@ public class TargetComponent extends JPanel {
      */
     private int blood = 10;
 
+    private int bloodLimit = 20;
+
     /**
      *
      */
     public TargetComponent() {
         super(null);
+        setBackground(new Color(242, 26, 69, 255));
     }
 
     /**
@@ -114,15 +118,8 @@ public class TargetComponent extends JPanel {
             }
 
         }
-        if (focus) {
-            int damageValue = fouceComponent.getAtkValue();
-            blood -= damageValue;
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>" + blood);
-            if (blood < 0) {
-                removeComponents.add(this);
-                aliveState = false;
-            }
-        }
+        Color colorNow = getBackground();
+        setBackground(new Color(colorNow.getRed(), colorNow.getGreen(), colorNow.getBlue(), (int) (255 * ((double)blood / bloodLimit))));
         // 计算移动步骤
         motionCount += 1;
         if (motionCount == UNIT_MOVE_COUNT) {
@@ -157,5 +154,15 @@ public class TargetComponent extends JPanel {
 
     public boolean isAliveState() {
         return aliveState;
+    }
+
+    public int getRestValue(int damage){
+        blood -= damage;
+        if (blood < 2){
+            removeComponents.add(this);
+            aliveState = false;
+            GlobalParticleLine.createParticle(container, this, getWidth() / 2);
+        }
+        return blood;
     }
 }
