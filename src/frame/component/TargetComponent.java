@@ -1,6 +1,7 @@
 package frame.component;
 
 import entity.Direction;
+import frame.pipeLine.GlobalMotionLine;
 import method.way.BuildSolution;
 
 import javax.swing.*;
@@ -8,29 +9,10 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static common.FrameConstant.FRAME_REFRESH_INTERVAL;
-import static common.FrameConstant.UNIT_MOVE_COUNT;
+import static common.FrameConstant.*;
+import static frame.pipeLine.GlobalMotionLine.removeComponents;
 
 public class TargetComponent extends JPanel {
-    /**
-     * 设置全局刷新率
-     */
-    private static final int UPDATE_DELAY = 1000 / FRAME_REFRESH_INTERVAL;
-
-    /**
-     * 设置全局定时器
-     */
-    private static Timer globalTimer;
-
-    /**
-     * 设置组件列表
-     */
-    public static final ArrayList<TargetComponent> components = new ArrayList<>();
-
-    /**
-     * 待移除组件列表
-     */
-    private static final ArrayList<TargetComponent> removeComponents = new ArrayList<>();
 
     /**
      * 地图数据
@@ -47,24 +29,25 @@ public class TargetComponent extends JPanel {
      */
     private Direction targetLocation;
 
-    public Direction getTargetLocation() {
-        return targetLocation;
-    }
-
     /**
-     * 帧位移量
+     * 每单位移动量
      */
     private int frameMotionValue = 0;
 
     /**
-     *
+     * 移动次数
      */
-    private int motionValue = 0;
+    private int motionCount = 0;
 
     /**
-     *
+     * 承载容器
      */
     private static JPanel container = null;
+
+    /**
+     * who focus
+     */
+    private TowerComponent fouceComponent = null;
 
     /**
      * focus
@@ -77,6 +60,11 @@ public class TargetComponent extends JPanel {
     private boolean aliveState = true;
 
     /**
+     * blood
+     */
+    private int blood = 10;
+
+    /**
      *
      */
     public TargetComponent() {
@@ -84,7 +72,21 @@ public class TargetComponent extends JPanel {
     }
 
     /**
+     * 获取容器
      *
+     * @return
+     */
+    public static JPanel getContainer() {
+        return container;
+    }
+
+
+    public static void setMatrix(int[][] sceneMatrix) {
+        mapMatrix = sceneMatrix;
+    }
+
+    /**
+     * 注册组件并添加到全局动作管线
      */
     public void register(JPanel panel, Point start, Point end) {
         container = panel;
@@ -92,49 +94,39 @@ public class TargetComponent extends JPanel {
         motionPath = BuildSolution.getMapWay(mapMatrix, start, end);
         targetLocation = motionPath.get(0);
         // 获取帧位移量
-        frameMotionValue = FRAME_REFRESH_INTERVAL / UNIT_MOVE_COUNT;
-        components.add(this);
+        frameMotionValue = UNIT_SIZE / UNIT_MOVE_COUNT;
+        GlobalMotionLine.addToPrepareComponents(this);
     }
 
-    public static void initializeGlobalTimer(int[][] matrix) {
-        mapMatrix = matrix;
-        if (globalTimer == null) {
-            globalTimer = new Timer(UPDATE_DELAY, e -> {
-                // 统一更新所有组件的位置
-                for (TargetComponent component : components) {
-                    component.updatePosition();
-                }
-                for (TargetComponent component : removeComponents) {
-                    components.remove(component);
-                    container.remove(component);
-                }
-                removeComponents.clear();
-            });
-            globalTimer.start();
-        }
-    }
-
-    private void updatePosition() {
+    public void motion() {
         // 获取当前坐标
         Point location = getLocation();
         // 获取移动方向
         int dir = targetLocation.direction;
-        int moveDist;
         switch (dir) {
             case 0, 2 -> {
-                moveDist = (dir == 0 ? -1 : 1) * this.getHeight() / UNIT_MOVE_COUNT;
-                this.setLocation(location.x, location.y + moveDist);
+                int dist = (dir == 0 ? -1 : 1) * frameMotionValue;
+                this.setLocation(location.x, location.y + dist);
             }
             case 1, 3 -> {
-                moveDist = (dir == 3 ? -1 : 1) * this.getWidth() / UNIT_MOVE_COUNT;
-                this.setLocation(location.x + moveDist, location.y);
+                int dist = (dir == 3 ? -1 : 1) * frameMotionValue;
+                this.setLocation(location.x + dist, location.y);
             }
 
         }
+        if (focus) {
+            int damageValue = fouceComponent.getAtkValue();
+            blood -= damageValue;
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>" + blood);
+            if (blood < 0) {
+                removeComponents.add(this);
+                aliveState = false;
+            }
+        }
         // 计算移动步骤
-        motionValue += frameMotionValue;
-        if (motionValue == FRAME_REFRESH_INTERVAL) {
-            motionValue = 0;
+        motionCount += 1;
+        if (motionCount == UNIT_MOVE_COUNT) {
+            motionCount = 0;
             int index = motionPath.indexOf(this.targetLocation);
             if (index == motionPath.size() - 1) {
                 removeComponents.add(this);
@@ -145,7 +137,17 @@ public class TargetComponent extends JPanel {
         }
     }
 
-    public void setFocus() {
+    /**
+     * 获取矩阵坐标
+     *
+     * @return
+     */
+    public Direction getTargetLocation() {
+        return targetLocation;
+    }
+
+    public void setFocus(TowerComponent component) {
+        this.fouceComponent = component;
         focus = true;
     }
 

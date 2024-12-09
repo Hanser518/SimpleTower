@@ -1,6 +1,7 @@
 package frame.component;
 
 import entity.Direction;
+import frame.pipeLine.GlobalMotionLine;
 import method.map.BuildMap;
 import method.map.TransMap;
 
@@ -11,12 +12,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import static common.FrameConstant.*;
+import static frame.pipeLine.GlobalMotionLine.addToPrepareComponents;
 
 public class SceneComponent extends JPanel {
-    /**
-     * 设置全局刷新率
-     */
-    private static final int UPDATE_DELAY = 2 * 1000;
+
+    private static final int interval = 20;
+
+    private static int count = 0;
 
     private int sceneWidth, sceneHeight;
 
@@ -26,33 +28,11 @@ public class SceneComponent extends JPanel {
 
     private Point sp = null, ep = null;
 
-    /**
-     * 设置全局定时器
-     */
-    private Timer sceneTimer;
-
     public SceneComponent(int width, int height) {
         super(null);
         initScene(width, height);
         initContent();
-        initTimer();
-    }
-
-    private void initTimer() {
-        JPanel scene = this;
-        if (sceneTimer == null) {
-            sceneTimer = new Timer(UPDATE_DELAY, e -> {
-                if (ep != null && sp != null){
-                    TargetComponent.initializeGlobalTimer(sceneMatrix);
-                    TargetComponent TC = new TargetComponent();
-                    TC.setBounds(sp.x * UNIT_SIZE, sp.y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-                    TC.setBackground(new Color(242, 26, 69, 135));
-                    TC.register(scene, sp, ep);
-                    add(TC);
-                }
-            });
-        }
-        sceneTimer.start();
+        TargetComponent.setMatrix(sceneMatrix);
     }
 
     private void initScene(int width, int height) {
@@ -95,7 +75,7 @@ public class SceneComponent extends JPanel {
                             panelMatrix[x][y].setBackground(new Color(69, 109, 169, 129));
                             // 非常狠毒的一行代码，使我方块来回跳跃
                             // sceneMatrix[x][y] = -1;
-                        } else if (sp != null && ep == null){
+                        } else if (sp != null && ep == null) {
                             ep = new Point(x, y);
                             panelMatrix[x][y].setBackground(new Color(211, 10, 10, 142));
                         } else {
@@ -106,10 +86,10 @@ public class SceneComponent extends JPanel {
                 } else if (SwingUtilities.isLeftMouseButton(e)) {
                     if (sceneMatrix[x][y] == 1) {
                         System.out.println("TOWER!");
-                        TowerComponent.initializeGlobalTimer();
                         TowerComponent TC = new TowerComponent(0);
                         TC.setBounds(x * UNIT_SIZE, y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
                         // TC.setBackground(new Color(169, 69, 89));
+                        sceneMatrix[x][y] = 2;
                         TC.register(scene, new Point(x, y), 1);
                         add(TC);
                     }
@@ -121,22 +101,40 @@ public class SceneComponent extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (!TowerComponent.components.isEmpty()) {
-            for (TowerComponent component : TowerComponent.components) {
-                if (component.getTargetComponent() != null && component.getTargetComponent().isAliveState()) {
-                    Point towerLocation = component.getLocation();
-                    Point targetLocation = component.getTargetComponent().getLocation();
+        if (!GlobalMotionLine.components.isEmpty()) {
+            for (JPanel component : GlobalMotionLine.components) {
+                if (component instanceof TowerComponent TC) {
 
-                    int towerW = component.getWidth();
-                    int towerH = component.getHeight();
-                    int targetW = component.getTargetComponent().getWidth();
-                    int targetH = component.getTargetComponent().getHeight();
+                    if (TC.getTargetComponent() != null && TC.getTargetComponent().isAliveState()) {
+                        Point towerLocation = component.getLocation();
+                        Point targetLocation = TC.getTargetComponent().getLocation();
 
-                    g.setColor(new Color(28, 54, 124, 255));
-                    g.drawLine(towerLocation.x + towerW / 2, towerLocation.y + towerH / 2, targetLocation.x + targetW / 2, targetLocation.y + targetH / 2);
+                        int towerW = component.getWidth();
+                        int towerH = component.getHeight();
+                        int targetW = TC.getTargetComponent().getWidth();
+                        int targetH = TC.getTargetComponent().getHeight();
+
+                        g.setColor(new Color(28, 54, 124, 255));
+                        g.drawLine(towerLocation.x + towerW / 2, towerLocation.y + towerH / 2, targetLocation.x + targetW / 2, targetLocation.y + targetH / 2);
+                    }
                 }
             }
         }
     }
 
+    public void motion(){
+        JPanel scene = this;
+        if(count < interval)
+            count++;
+        else{
+            if (ep != null && sp != null) {
+                TargetComponent TC = new TargetComponent();
+                TC.setBounds(sp.x * UNIT_SIZE, sp.y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
+                TC.setBackground(new Color(242, 26, 69, 135));
+                TC.register(scene, sp, ep);
+                add(TC);
+            }
+            count = 0;
+        }
+    }
 }

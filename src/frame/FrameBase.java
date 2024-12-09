@@ -3,7 +3,7 @@ package frame;
 import frame.annotation.InitMethod;
 import frame.component.ParticleComponent;
 import frame.component.SceneComponent;
-import frame.component.TargetComponent;
+import frame.pipeLine.GlobalMotionLine;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import static common.FrameConstant.*;
 
 import static frame.Element.*;
+import static frame.pipeLine.GlobalMotionLine.components;
 
 public class FrameBase extends JFrame implements ActionListener {
 
@@ -56,7 +57,10 @@ public class FrameBase extends JFrame implements ActionListener {
 //        MAIN_PANEL.add(target);
 //        target.register(new Point(1, 1), new Point(ZERO_ONE_MATRIX.length - 2, ZERO_ONE_MATRIX[0].length - 2));
 
-        MAIN_PANEL.add(new SceneComponent(10, 7));
+        SceneComponent sc = new SceneComponent(10, 7);
+
+        MAIN_PANEL.add(sc);
+        GlobalMotionLine.addToPrepareComponents(sc);
 
         add(MAIN_PANEL, BorderLayout.CENTER);
         add(componentCount, BorderLayout.NORTH);
@@ -68,7 +72,7 @@ public class FrameBase extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        componentCount.setText("COUNT: " + TargetComponent.components.size());
+        componentCount.setText("COUNT: " + components.size());
         this.repaint();
     }
 
@@ -86,7 +90,9 @@ public class FrameBase extends JFrame implements ActionListener {
             throw new RuntimeException(e);
         }
         ParticleComponent.initializeGlobalTimer();
+
         getPanelMatrix(10, 10);
-        TargetComponent.initializeGlobalTimer(ZERO_ONE_MATRIX);
+
+        GlobalMotionLine.initializeGlobalTimer();
     }
 }

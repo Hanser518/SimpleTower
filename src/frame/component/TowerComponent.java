@@ -1,12 +1,12 @@
 package frame.component;
 
 import entity.Direction;
+import frame.pipeLine.GlobalMotionLine;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
-import static common.FrameConstant.FRAME_REFRESH_INTERVAL;
+import static frame.pipeLine.GlobalMotionLine.components;
 
 public class TowerComponent extends JPanel {
 
@@ -16,29 +16,10 @@ public class TowerComponent extends JPanel {
     public static final Integer TOWER_TYPE_TYPE1 = 1;
 
     /**
-     * 设置全局刷新率
-     */
-    private static final int UPDATE_DELAY = 1000 / FRAME_REFRESH_INTERVAL;
-
-    /**
-     * 设置全局定时器
-     */
-    private static Timer globalTimer;
-
-    /**
-     * 设置组件列表
-     */
-    public static final ArrayList<TowerComponent> components = new ArrayList<>();
-
-    /**
-     * 待移除组件列表
-     */
-    private static final ArrayList<TowerComponent> removeComponents = new ArrayList<>();
-
-    /**
      * 点位标识
      */
     private Direction towerLocation;
+
 
     public Direction getTowerLocation() {
         return towerLocation;
@@ -58,6 +39,8 @@ public class TowerComponent extends JPanel {
      * 目标
      */
     private TargetComponent target = null;
+
+    private Integer atkValue;
 
     public TargetComponent getTargetComponent() {
         return target;
@@ -80,31 +63,14 @@ public class TowerComponent extends JPanel {
     public void register(JPanel panel, Point location, int dir) {
         container = panel;
         this.towerLocation = new Direction(location, dir);
-        components.add(this);
-    }
-
-    public static void initializeGlobalTimer() {
-        if (globalTimer == null) {
-            globalTimer = new Timer(UPDATE_DELAY, e -> {
-                // 统一更新所有组件的位置
-                for (TowerComponent component : components) {
-                    component.executeTransaction();
-                }
-                for (TowerComponent component : removeComponents) {
-                    components.remove(component);
-                    container.remove(component);
-                }
-                removeComponents.clear();
-            });
-            globalTimer.start();
-        }
+        GlobalMotionLine.addToPrepareComponents(this);
     }
 
     /**
      * 事务（暂定，后面可能会根据type执行不同的事务）
      */
-    private void executeTransaction() {
-        if (TargetComponent.components.isEmpty()) {
+    public void motion() {
+        if (components.isEmpty()) {
             return;
         }
         if (target != null && !target.isAliveState()) {
@@ -113,20 +79,30 @@ public class TowerComponent extends JPanel {
         if (target == null) {
             TargetComponent prepare = null;
             int dist = 115411;
-            for (TargetComponent tar : TargetComponent.components) {
-                if (!tar.isFocus()) {
-                    Direction tarLocation = tar.getTargetLocation();
-                    int distFromTower = (int) Math.sqrt(Math.pow(tarLocation.x - towerLocation.x, 2) + Math.pow(tarLocation.y - towerLocation.y, 2));
-                    prepare = distFromTower < dist ? tar : prepare;
-                    dist = Math.min(distFromTower, dist);
+            for (JPanel rawComponent : components) {
+                if (rawComponent instanceof TargetComponent tar) {
+                    if (!tar.isFocus()) {
+                        Direction tarLocation = tar.getTargetLocation();
+                        int distFromTower = (int) Math.sqrt(Math.pow(tarLocation.x - towerLocation.x, 2) + Math.pow(tarLocation.y - towerLocation.y, 2));
+                        prepare = distFromTower < dist ? tar : prepare;
+                        dist = Math.min(distFromTower, dist);
+                    }
                 }
             }
             if (prepare != null) {
-                prepare.setFocus();
+                prepare.setFocus(this);
                 target = prepare;
             }
         } else {
             container.repaint();
+        }
+    }
+
+    public int getAtkValue(){
+        if (atkValue == null){
+            return 1;
+        }else {
+            return atkValue;
         }
     }
 }
