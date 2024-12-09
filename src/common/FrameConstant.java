@@ -10,9 +10,9 @@ public interface FrameConstant {
 
     Integer FRAME_REFRESH_INTERVAL = 60;
 
-    Integer UNIT_MOVE_COUNT = 30;
+    Integer UNIT_MOVE_COUNT = 20;
 
-    Integer UNIT_SIZE = 30;
+    Integer UNIT_SIZE = 40;
 
     Font MAIN_FONT = new Font("Microsoft YaHei", Font.BOLD, 15);
 

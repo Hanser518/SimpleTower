@@ -1,4 +1,4 @@
-package frame;
+package common;
 
 import entity.Direction;
 import frame.annotation.InitMethod;
@@ -85,6 +85,19 @@ public class Element {
     public void initComponentCount() {
         componentCount.setFont(MAIN_FONT);
     }
+
+
+    public static int SCENE_LAYER = 1000;
+    public static int COMPONENT_LAYER = 100;
+    public static int PARTICLE_LAYER = 1;
+
+    public static JLayeredPane layerPanel = new JLayeredPane();
+
+    @InitMethod
+    public void initLayerPanel() {
+        layerPanel.setBackground(new Color(111, 111, 111));
+    }
+
 
     /**
      * 示例方法

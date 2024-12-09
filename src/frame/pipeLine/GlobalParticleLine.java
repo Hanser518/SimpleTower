@@ -79,7 +79,8 @@ public class GlobalParticleLine extends JPanel {
         for (int i = 0; i < 10; i++) {
             GlobalParticleLine pc = new GlobalParticleLine();
             pc.setBounds(location.x + component.getWidth() / 4, location.y + component.getHeight() / 4, liveCycle / 2, liveCycle / 2);
-            pc.setBackground(component.getBackground());
+            Color componentColor = component.getBackground();
+            pc.setBackground(new Color(componentColor.getRed(), componentColor.getGreen(), componentColor.getBlue(), 255));
             pc.register(container, liveCycle);
         }
     }

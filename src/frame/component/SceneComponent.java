@@ -1,5 +1,6 @@
 package frame.component;
 
+import common.Element;
 import entity.Direction;
 import frame.pipeLine.GlobalMotionLine;
 import frame.pipeLine.GlobalParticleLine;
@@ -17,17 +18,8 @@ import static common.FrameConstant.*;
 import static frame.pipeLine.GlobalMotionLine.addToPrepareComponents;
 
 public class SceneComponent extends JPanel {
-    /**
-     * 设置全局刷新率
-     */
-    private static final int UPDATE_DELAY = 1000 / FRAME_REFRESH_INTERVAL;
 
-    /**
-     * 设置全局定时器
-     */
-    private static Timer GLOBAL_TIMER;
-
-    private static final int interval = 60;
+    private static final int interval = UNIT_MOVE_COUNT * 2;
 
     private static int count = 0;
 
@@ -43,17 +35,7 @@ public class SceneComponent extends JPanel {
         super(null);
         initScene(width, height);
         initContent();
-        initTimer();
         TargetComponent.setMatrix(sceneMatrix);
-    }
-
-    private void initTimer() {
-        if (GLOBAL_TIMER == null) {
-            GLOBAL_TIMER = new Timer(UPDATE_DELAY, actionEvent -> {
-                motion();
-            });
-            GLOBAL_TIMER.start();
-        }
     }
 
     private void initScene(int width, int height) {
@@ -112,10 +94,11 @@ public class SceneComponent extends JPanel {
                         // TC.setBackground(new Color(169, 69, 89));
                         sceneMatrix[x][y] = 1;
                         TC.register(scene, new Point(x, y), 1);
-                        scene.add(TC);
+                        Element.layerPanel.add(TC, Element.COMPONENT_LAYER);
+                        // scene.add(TC);
                     }
+                    GlobalParticleLine.createParticle(scene, panel, panel.getWidth());
                 }
-                GlobalParticleLine.createParticle(scene, panel, panel.getWidth());
             }
         });
     }

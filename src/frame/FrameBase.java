@@ -1,5 +1,6 @@
 package frame;
 
+import common.Element;
 import frame.annotation.InitMethod;
 import frame.pipeLine.GlobalParticleLine;
 import frame.component.SceneComponent;
@@ -13,7 +14,7 @@ import java.lang.reflect.Method;
 
 import static common.FrameConstant.*;
 
-import static frame.Element.*;
+import static common.Element.*;
 import static frame.pipeLine.GlobalMotionLine.components;
 
 public class FrameBase extends JFrame implements ActionListener {
@@ -59,9 +60,11 @@ public class FrameBase extends JFrame implements ActionListener {
 
         SceneComponent sc = new SceneComponent(8, 6);
 
-        MAIN_PANEL.add(sc);
+//        MAIN_PANEL.add(sc);
+        layerPanel.add(sc, SCENE_LAYER);
+        GlobalMotionLine.addToPrepareComponents(sc);
 
-        add(MAIN_PANEL, BorderLayout.CENTER);
+        add(layerPanel, BorderLayout.CENTER);
         add(componentCount, BorderLayout.NORTH);
 
 
