@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.util.Map;
 
@@ -112,6 +113,24 @@ public class Element {
     @InitMethod
     public void initLayerPanel() {
         layerPanel.setBackground(new Color(111, 111, 111));
+        layerPanel.setBorder(new Border() {
+            @Override
+            public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+                for (int i = -30; i < width + 120; i += 30) {
+                    g.drawLine(x + i, y, x + i - 30 * 3, height);
+                }
+            }
+
+            @Override
+            public Insets getBorderInsets(Component c) {
+                return null;
+            }
+
+            @Override
+            public boolean isBorderOpaque() {
+                return false;
+            }
+        });
     }
 
 

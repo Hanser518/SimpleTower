@@ -1,7 +1,9 @@
 package frame.component;
 
+import common.Element;
 import frame.component.impl.LightningTowerComponent;
 import frame.component.impl.TargetComponent;
+import frame.pipeLine.GlobalMotionLine;
 import frame.pipeLine.GlobalParticleLine;
 import method.map.BuildMap;
 import method.map.TransMap;
@@ -36,17 +38,6 @@ public class SceneComponent extends JPanel {
         this.setDoubleBuffered(true);
         initScene(width, height);
         initContent();
-        TargetComponent.setMatrix(sceneMatrix);
-    }
-
-    public void initGraphics(SceneComponent sc) {
-        Image offScreenImage = sc.createImage(sceneWidth * UNIT_SIZE, sceneHeight * UNIT_SIZE);;
-        backComponent = offScreenImage.getGraphics();
-        for (int i = 0; i < panelMatrix.length; i++) {
-            for (int j = 0; j < panelMatrix[i].length; j++) {
-                panelMatrix[i][j].setBackground(new Color(0, 0, 0, 0));
-            }
-        }
     }
 
     private void initScene(int width, int height) {
@@ -54,11 +45,11 @@ public class SceneComponent extends JPanel {
         sceneMatrix = TransMap.getTransMatrix(sceneMatrix);
         sceneWidth = sceneMatrix.length;
         sceneHeight = sceneMatrix[0].length;
+        TargetComponent.setMatrix(sceneMatrix);
         this.setBounds(0, 0, sceneWidth * UNIT_SIZE, sceneHeight * UNIT_SIZE);
     }
 
     private void initContent() {
-//        JPanel container = Element.layerMap.get(0);
         panelMatrix = new JPanel[sceneWidth][sceneHeight];
         for (int i = 0; i < panelMatrix.length; i++) {
             for (int j = 0; j < panelMatrix[i].length; j++) {
@@ -76,6 +67,22 @@ public class SceneComponent extends JPanel {
                 layerPanel.add(panelMatrix[i][j], SCENE_LAYER);
             }
         }
+    }
+
+    public void resetScene(int width, int height) {
+        sceneMatrix = BuildMap.getMap(width, height);
+        sceneMatrix = TransMap.getTransMatrix(sceneMatrix);
+        sceneWidth = sceneMatrix.length;
+        sceneHeight = sceneMatrix[0].length;
+        TargetComponent.setMatrix(sceneMatrix);
+        this.setBounds(0, 0, sceneWidth * UNIT_SIZE, sceneHeight * UNIT_SIZE);
+        Element.layerPanel.removeAll();
+        GlobalMotionLine.components.clear();
+        GlobalMotionLine.components.add(this);
+        initContent();
+        sp = null;
+        ep = null;
+        TargetComponent.setMatrix(sceneMatrix);
     }
 
     private void addFunctionClickTarget(JPanel panel, int x, int y) {

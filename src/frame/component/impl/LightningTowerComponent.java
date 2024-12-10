@@ -155,10 +155,8 @@ public class LightningTowerComponent extends JPanel implements StanderComponent 
                 } else {
                     if (atkLoad > atkInterval) {
                         int targetValue = target.getRestValue(getAtkValue());
-
                         Point towerLocation = getLocation();
                         Point targetLocation = target.getLocation();
-
                         GlobalParticleLine.registerLineParticle(Element.layerPanel, towerLocation, targetLocation, 10);
                         if (targetValue < 0) {
                             target = null;

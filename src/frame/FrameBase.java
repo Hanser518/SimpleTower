@@ -24,6 +24,8 @@ public class FrameBase extends JFrame implements ActionListener {
 
     public static JPanel operationPanel;
 
+    public static SceneComponent sc;
+
     public static void main(String[] args) {
         new FrameBase();
     }
@@ -68,6 +70,13 @@ public class FrameBase extends JFrame implements ActionListener {
                     method.invoke(initElement);
                 }
             }
+            Method[] fMethods = FrameBase.class.getDeclaredMethods();
+            // 遍历所有方法，找到标记了 @InitMethod 注解的方法并调用
+            for (Method method : fMethods) {
+                if (method.isAnnotationPresent(InitMethod.class)) {
+                    method.invoke(this);
+                }
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -76,10 +85,8 @@ public class FrameBase extends JFrame implements ActionListener {
         GlobalMotionLine.initializeGlobalTimer();
 
         // 初始化组件
-        SceneComponent sc = new SceneComponent(8, 6);
+        sc = new SceneComponent(8, 6);
         GlobalMotionLine.addToPrepareComponents(sc);
-
-        buildOperationPanel();
 
         add(operationPanel, BorderLayout.WEST);
         add(layerPanel, BorderLayout.CENTER);
@@ -87,14 +94,20 @@ public class FrameBase extends JFrame implements ActionListener {
 
     }
 
-    private JPanel buildOperationPanel() {
+    @InitMethod
+    private void buildOperationPanel() {
         operationPanel = new JPanel();
         operationPanel.setLayout(new BoxLayout(operationPanel, BoxLayout.Y_AXIS));
 
-        JButton editButton = new JButton("Edit");
+        JButton editButton = new JButton("Edit Matrix");
+        editButton.addActionListener(ac -> {
+            int w = (int) (Math.random() * 20 + 7);
+            int h = (int) (Math.random() * 10 + 7);
+            sc.resetScene((w - 1) / 2, (h - 1) / 2);
+            repaint();
+        });
 
         // 将组件添加到面板中
         operationPanel.add(editButton);
-        return operationPanel;
     }
 }
