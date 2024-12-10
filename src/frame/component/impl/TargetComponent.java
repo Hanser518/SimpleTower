@@ -1,11 +1,13 @@
-package frame.component;
+package frame.component.impl;
 
 import entity.Direction;
+import frame.component.StanderComponent;
 import frame.pipeLine.GlobalMotionLine;
 import frame.pipeLine.GlobalParticleLine;
 import method.way.BuildSolution;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +15,7 @@ import java.util.List;
 import static common.FrameConstant.*;
 import static frame.pipeLine.GlobalMotionLine.removeComponents;
 
-public class TargetComponent extends JPanel {
+public class TargetComponent extends JPanel implements StanderComponent {
 
     /**
      * 地图数据
@@ -43,17 +45,7 @@ public class TargetComponent extends JPanel {
     /**
      * 承载容器
      */
-    private static JPanel container = null;
-
-    /**
-     * who focus
-     */
-    private TowerComponent fouceComponent = null;
-
-    /**
-     * focus
-     */
-    private boolean focus = false;
+    private static JLayeredPane container = null;
 
     /**
      * state
@@ -63,7 +55,7 @@ public class TargetComponent extends JPanel {
     /**
      * blood
      */
-    private int blood = 10;
+    private int blood = 20;
 
     private int bloodLimit = 20;
 
@@ -72,7 +64,25 @@ public class TargetComponent extends JPanel {
      */
     public TargetComponent() {
         super(null);
-        setBackground(new Color(242, 26, 69, 255));
+        setBackground(new Color(131, 38, 56, 255));
+        setBorder(new Border() {
+            @Override
+            public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+                g.setColor(new Color(9, 30, 67));
+                g.drawRect(x + 1, y + 1, width - 2, 6);
+                g.fillRect(x + 1, y + 1, (int) ((width - 2) * ((float) blood / bloodLimit)), 6);
+            }
+
+            @Override
+            public Insets getBorderInsets(Component c) {
+                return null;
+            }
+
+            @Override
+            public boolean isBorderOpaque() {
+                return false;
+            }
+        });
     }
 
     /**
@@ -80,7 +90,7 @@ public class TargetComponent extends JPanel {
      *
      * @return
      */
-    public static JPanel getContainer() {
+    public static JLayeredPane getContainer() {
         return container;
     }
 
@@ -92,7 +102,7 @@ public class TargetComponent extends JPanel {
     /**
      * 注册组件并添加到全局动作管线
      */
-    public void register(JPanel panel, Point start, Point end) {
+    public void register(JLayeredPane panel, Point start, Point end) {
         container = panel;
         // 计算路径、初始化点位
         motionPath = BuildSolution.getMapWay(mapMatrix, start, end);
@@ -102,6 +112,7 @@ public class TargetComponent extends JPanel {
         GlobalMotionLine.addToPrepareComponents(this);
     }
 
+    @Override
     public void motion() {
         // 获取当前坐标
         Point location = getLocation();
@@ -119,7 +130,7 @@ public class TargetComponent extends JPanel {
 
         }
         Color colorNow = getBackground();
-        setBackground(new Color(colorNow.getRed(), colorNow.getGreen(), colorNow.getBlue(), (int) (255 * ((double)blood / bloodLimit))));
+        setBackground(new Color(colorNow.getRed(), colorNow.getGreen(), colorNow.getBlue(), (int) (255 * ((double) blood / bloodLimit))));
         // 计算移动步骤
         motionCount += 1;
         if (motionCount == UNIT_MOVE_COUNT) {
@@ -143,25 +154,16 @@ public class TargetComponent extends JPanel {
         return targetLocation;
     }
 
-    public void setFocus(TowerComponent component) {
-        this.fouceComponent = component;
-        focus = true;
-    }
-
-    public boolean isFocus() {
-        return focus;
-    }
-
     public boolean isAliveState() {
         return aliveState;
     }
 
-    public int getRestValue(int damage){
+    public int getRestValue(int damage) {
         blood -= damage;
-        if (blood < 2){
+        if (blood < 2) {
             removeComponents.add(this);
             aliveState = false;
-            GlobalParticleLine.createParticle(container, this, getWidth() / 2);
+            GlobalParticleLine.registerBrokenParticle(container, this, getWidth() / 2);
         }
         return blood;
     }

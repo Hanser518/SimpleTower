@@ -54,7 +54,7 @@ public class GlobalMotionLine {
                 for (JPanel component : removeComponents) {
                     try {
                         Method getContainer = component.getClass().getDeclaredMethod("getContainer");
-                        JPanel container = (JPanel) getContainer.invoke(component);
+                        JLayeredPane container = (JLayeredPane) getContainer.invoke(component);
                         container.remove(component);
                     } catch (Exception e) {
                         System.out.println(COUNT + "-ERROR: " + e.getMessage());

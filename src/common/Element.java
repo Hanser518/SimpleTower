@@ -7,10 +7,12 @@ import method.map.TransMap;
 import method.way.BuildSolution;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Map;
 
 import static common.FrameConstant.*;
 
@@ -87,10 +89,24 @@ public class Element {
     }
 
 
-    public static int SCENE_LAYER = 1000;
-    public static int COMPONENT_LAYER = 100;
-    public static int PARTICLE_LAYER = 1;
+    /**
+     * 场景图层
+     */
+    public static int SCENE_LAYER = 1;
 
+    /**
+     * 组件图层
+     */
+    public static int COMPONENT_LAYER = 3;
+
+    /**
+     * 特效图层
+     */
+    public static int PARTICLE_LAYER = 5;
+
+    /**
+     * 图层容器
+     */
     public static JLayeredPane layerPanel = new JLayeredPane();
 
     @InitMethod

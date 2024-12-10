@@ -10,13 +10,13 @@ public interface FrameConstant {
 
     Integer FRAME_REFRESH_INTERVAL = 60;
 
-    Integer UNIT_MOVE_COUNT = 20;
+    Integer UNIT_MOVE_COUNT = 15;
 
-    Integer UNIT_SIZE = 40;
+    Integer UNIT_SIZE = 45;
 
     Font MAIN_FONT = new Font("Microsoft YaHei", Font.BOLD, 15);
 
-    Color ROAD_COLOR = new Color(232, 218, 218, 127);
+    Color ROAD_COLOR = new Color(218, 218, 218, 255);
 
-    Color WALL_COLOR = new Color(101, 94, 90, 127);
+    Color WALL_COLOR = new Color(101, 94, 90, 255);
 }
