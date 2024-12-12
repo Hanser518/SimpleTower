@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import static common.FrameConstant.FRAME_REFRESH_INTERVAL;
+import static common.Constant.FRAME_REFRESH_INTERVAL;
 
 public class GlobalTowerLine {
     /**
@@ -52,6 +52,7 @@ public class GlobalTowerLine {
     private static void updateMotion() {
         // 统一更新所有组件的位置
         if (components != null) {
+            COUNT ++;
             for (JPanel component : components) {
                 try {
                     Method componentMotion = component.getClass().getDeclaredMethod("motion");

@@ -73,12 +73,13 @@ public class LandComponent extends JPanel implements StanderComponent {
                 int hSize = UNIT_SIZE / 8;
                 Graphics2D g2d = (Graphics2D) g;
 
-                g2d.setColor(new Color(155, 155, 155, (int) (255 * ((double) durationAbility / 20))));
+                int alpha = (int) (255 * ((double) durationAbility / 20));
+                g2d.setColor(new Color(155, 155, 155, alpha));
                 g2d.drawRect(x + 1, y + 1, width - 3, height - 3);
                 for (int i = 1; i < 8; i += 2) {
                     for (int j = 1; j < 8; j += 2) {
                         if (i == 1 || j == 1 || i == 7 || j == 7) {
-                            g2d.setColor(new Color(123, 145, 99));
+                            g2d.setColor(new Color(123, 145, 99, alpha));
                             g2d.fillRect(wSize * j, hSize * i, wSize, hSize);
 
                             g2d.setColor(new Color(57, 69, 87));
@@ -140,7 +141,9 @@ public class LandComponent extends JPanel implements StanderComponent {
                 if (distFromTower > atkRange) {
                     target = null;
                 } else {
-                    if (distFromTower < 1 && durationAbility > 0) {
+                    Point location = target.getLocation();
+                    int distance = getDistance(location, getLocation());
+                    if (distance < UNIT_SIZE && durationAbility > 0) {
                         target.setResist(this);
                     } else {
                         target.cancelResist();
