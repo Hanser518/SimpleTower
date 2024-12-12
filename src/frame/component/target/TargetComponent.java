@@ -1,7 +1,9 @@
 package frame.component.target;
 
+import common.Element;
 import entity.Direction;
 import frame.component.StanderComponent;
+import frame.component.tower.LandComponent;
 import frame.pipeLine.GlobalMotionLine;
 import frame.pipeLine.GlobalParticleLine;
 import method.way.BuildSolution;
@@ -9,9 +11,11 @@ import method.way.BuildSolution;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import static common.Constant.FRAME_REFRESH_INTERVAL;
 import static common.Constant.UNIT_MOVE_COUNT;
 import static common.FrameConstant.*;
 import static frame.pipeLine.GlobalMotionLine.removeComponents;
@@ -58,12 +62,34 @@ public class TargetComponent extends JPanel implements StanderComponent {
      */
     private int blood = 20;
 
+
+
     private int bloodLimit = 20;
 
     /**
      * 阻挡状态
      */
     private boolean towerResist = false;
+
+    /**
+     * 阻挡组件
+     */
+    private JPanel resistComponent = null;
+
+    /**
+     * atk value
+     */
+    private final Integer atkValue = 1;
+
+    /**
+     * atk load
+     */
+    private int atkLoad = 20;
+
+    /**
+     * atk interval
+     */
+    private final Integer atkInterval = FRAME_REFRESH_INTERVAL / 3;
 
     /**
      *
@@ -151,6 +177,24 @@ public class TargetComponent extends JPanel implements StanderComponent {
                     this.targetLocation = motionPath.get(index + 1);
                 }
             }
+        } else {
+            if (resistComponent != null){
+                if (atkLoad > atkInterval) {
+                    Class<?> resistClass = resistComponent.getClass();
+                    try{
+                        Method getRestValue = resistClass.getMethod("getRestValue", int.class);
+                        int resistValue = (int)getRestValue.invoke(resistComponent, atkValue);
+                        if (resistValue < 0){
+                            cancelResist();
+                        }
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    atkLoad = 0;
+                } else {
+                    atkLoad++;
+                }
+            }
         }
     }
 
@@ -181,11 +225,13 @@ public class TargetComponent extends JPanel implements StanderComponent {
         return targetLocation.direction;
     }
 
-    public void setResist(){
+    public void setResist(JPanel component){
         towerResist = true;
+        this.resistComponent = component;
     }
 
     public void cancelResist(){
         towerResist = false;
+        this.resistComponent = null;
     }
 }

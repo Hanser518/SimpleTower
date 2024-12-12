@@ -15,6 +15,7 @@ import java.awt.*;
 import static common.Constant.FRAME_REFRESH_INTERVAL;
 import static common.FrameConstant.UNIT_SIZE;
 import static frame.pipeLine.GlobalMotionLine.components;
+import static frame.pipeLine.GlobalMotionLine.removeComponents;
 
 public class LandComponent extends JPanel implements StanderComponent {
     /**
@@ -57,6 +58,11 @@ public class LandComponent extends JPanel implements StanderComponent {
      */
     private final Integer atkRange = 1;
 
+    /**
+     *
+     */
+    private int durationAbility = 10;
+
     public LandComponent() {
         super(null);
         setBackground(new Color(189, 199, 191, 0));
@@ -67,7 +73,7 @@ public class LandComponent extends JPanel implements StanderComponent {
                 int hSize = UNIT_SIZE / 8;
                 Graphics2D g2d = (Graphics2D) g;
 
-                g2d.setColor(new Color(155, 155, 155, 189));
+                g2d.setColor(new Color(155, 155, 155, (int) (255 * ((double) durationAbility / 20))));
                 g2d.drawRect(x + 1, y + 1, width - 3, height - 3);
                 for (int i = 1; i < 8; i += 2) {
                     for (int j = 1; j < 8; j += 2) {
@@ -134,13 +140,13 @@ public class LandComponent extends JPanel implements StanderComponent {
                 if (distFromTower > atkRange) {
                     target = null;
                 } else {
-                    Point tarPoint = target.getLocation();
-                    int distance = getDistance(tarPoint, getLocation());
-                    if (distance < UNIT_SIZE) {
-                        target.setResist();
+                    if (distFromTower < 1 && durationAbility > 0) {
+                        target.setResist(this);
+                    } else {
+                        target.cancelResist();
                     }
                     if (atkLoad > atkInterval) {
-                        int targetValue = target.getRestValue(atkValue);
+                        int targetValue = target.getRestValue(distFromTower <= 1 ? atkValue : atkValue / 2);
                         Point towerLocation = getLocation();
                         Point targetLocation = target.getLocation();
                         GlobalParticleLine.registerLineParticle(Element.layerPanel, towerLocation, targetLocation, 10);
@@ -154,6 +160,15 @@ public class LandComponent extends JPanel implements StanderComponent {
                 }
             }
         }
+    }
+
+    public int getRestValue(int damage) {
+        durationAbility -= damage;
+        if (durationAbility < 0) {
+            removeComponents.add(this);
+            GlobalParticleLine.registerBrokenParticle(container, this, getWidth() / 2);
+        }
+        return durationAbility;
     }
 
     private int getDistance(Point p1, Point p2) {
