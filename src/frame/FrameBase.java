@@ -3,6 +3,7 @@ package frame;
 import common.Element;
 import frame.annotation.InitMethod;
 import frame.component.CandidateComponent;
+import frame.component.tower.LandComponent;
 import frame.component.tower.LightningComponent;
 import frame.pipeLine.GlobalParticleLine;
 import frame.component.SceneComponent;
@@ -12,7 +13,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import static common.Constant.*;
 import static common.FrameConstant.*;
@@ -107,7 +112,7 @@ public class FrameBase extends JFrame implements ActionListener {
 
     }
 
-    public static SceneComponent getSceneComponent(){
+    public static SceneComponent getSceneComponent() {
         return sceneComponent;
     }
 
@@ -128,19 +133,41 @@ public class FrameBase extends JFrame implements ActionListener {
             repaint();
         });
 
-        JButton addButton = new JButton("BUY COMP");
-        addButton.addActionListener(ac -> {
-            if (CandidateComponent.getCompPoint() >= LightningComponent.getCost()){
-                CandidateComponent.addToComponent(new LightningComponent());
-                CandidateComponent.deleteCompPoint(LightningComponent.getCost());
-                System.out.println(CandidateComponent.getComponentNum());
-                revalidate();
-                repaint();
-            }
-        });
+        List<JPanel> compList = new ArrayList<>();
+        compList.add(new LightningComponent());
+        compList.add(new LandComponent());
 
         // 将组件添加到面板中
         operationPanel.add(editButton);
-        operationPanel.add(addButton);
+        initShopButton(compList);
+    }
+
+    private void initShopButton(List<JPanel> compList) {
+        for (JPanel comp : compList) {
+            try {
+                Class<?> compClass = comp.getClass();
+                Constructor<?> compConstructor = compClass.getConstructor();
+                Method getCost = compClass.getMethod("getCost");
+
+                String compName = compClass.getSimpleName();
+                JButton addButton = new JButton("BUY " + compName);
+                addButton.addActionListener(ac -> {
+                    try {
+                        JPanel compPanel = (JPanel) compConstructor.newInstance();
+                        if (CandidateComponent.getCompPoint() >= (int) getCost.invoke(compPanel)) {
+                            CandidateComponent.addToComponent(compPanel);
+                            CandidateComponent.deleteCompPoint((int) getCost.invoke(compPanel));
+                            revalidate();
+                            repaint();
+                        }
+                    } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                operationPanel.add(addButton);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
     }
 }

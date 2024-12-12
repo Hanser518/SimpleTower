@@ -1,5 +1,7 @@
 package frame.component.scene;
 
+import frame.component.tower.LightningComponent;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
@@ -51,11 +53,15 @@ public class WallComponent extends JPanel {
         });
     }
 
-    public boolean isDeploymentEnabled(){
-        if (type == null){
-            return true;
-        }else {
-            return type.equals(WALL_STYLE1);
+    public boolean isDeploymentEnabled(JPanel component) {
+        if (component instanceof LightningComponent) {
+            if (type == null) {
+                return true;
+            } else {
+                return type.equals(WALL_STYLE1);
+            }
+        } else {
+            return false;
         }
     }
 
@@ -65,7 +71,7 @@ public class WallComponent extends JPanel {
         setBorder(new Border() {
             @Override
             public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-                if (type != null){
+                if (type != null) {
                     int bitWidth = Math.max(width / 9, 1);
                     int bitHeight = Math.max(height / 9, 1);
                     Graphics2D g2d = (Graphics2D) g;

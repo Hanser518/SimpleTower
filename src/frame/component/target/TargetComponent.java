@@ -61,6 +61,11 @@ public class TargetComponent extends JPanel implements StanderComponent {
     private int bloodLimit = 20;
 
     /**
+     * 阻挡状态
+     */
+    private boolean towerResist = false;
+
+    /**
      *
      */
     public TargetComponent() {
@@ -115,33 +120,36 @@ public class TargetComponent extends JPanel implements StanderComponent {
 
     @Override
     public void motion() {
-        // 获取当前坐标
-        Point location = getLocation();
-        // 获取移动方向
-        int dir = targetLocation.direction;
-        switch (dir) {
-            case 0, 2 -> {
-                int dist = (dir == 0 ? -1 : 1) * frameMotionValue;
-                this.setLocation(location.x, location.y + dist);
-            }
-            case 1, 3 -> {
-                int dist = (dir == 3 ? -1 : 1) * frameMotionValue;
-                this.setLocation(location.x + dist, location.y);
-            }
+        // 检测是否为阻挡状态
+        if (!towerResist) {
+            // 获取当前坐标
+            Point location = getLocation();
+            // 获取移动方向
+            int dir = targetLocation.direction;
+            switch (dir) {
+                case 0, 2 -> {
+                    int dist = (dir == 0 ? -1 : 1) * frameMotionValue;
+                    this.setLocation(location.x, location.y + dist);
+                }
+                case 1, 3 -> {
+                    int dist = (dir == 3 ? -1 : 1) * frameMotionValue;
+                    this.setLocation(location.x + dist, location.y);
+                }
 
-        }
-        Color colorNow = getBackground();
-        setBackground(new Color(colorNow.getRed(), colorNow.getGreen(), colorNow.getBlue(), (int) (255 * ((double) blood / bloodLimit))));
-        // 计算移动步骤
-        motionCount += 1;
-        if (motionCount == UNIT_MOVE_COUNT) {
-            motionCount = 0;
-            int index = motionPath.indexOf(this.targetLocation);
-            if (index == motionPath.size() - 1) {
-                removeComponents.add(this);
-                aliveState = false;
-            } else {
-                this.targetLocation = motionPath.get(index + 1);
+            }
+            Color colorNow = getBackground();
+            setBackground(new Color(colorNow.getRed(), colorNow.getGreen(), colorNow.getBlue(), (int) (255 * ((double) blood / bloodLimit))));
+            // 计算移动步骤
+            motionCount += 1;
+            if (motionCount == UNIT_MOVE_COUNT) {
+                motionCount = 0;
+                int index = motionPath.indexOf(this.targetLocation);
+                if (index == motionPath.size() - 1) {
+                    removeComponents.add(this);
+                    aliveState = false;
+                } else {
+                    this.targetLocation = motionPath.get(index + 1);
+                }
             }
         }
     }
@@ -167,5 +175,17 @@ public class TargetComponent extends JPanel implements StanderComponent {
             GlobalParticleLine.registerBrokenParticle(container, this, getWidth() / 2);
         }
         return blood;
+    }
+
+    public int getDirection() {
+        return targetLocation.direction;
+    }
+
+    public void setResist(){
+        towerResist = true;
+    }
+
+    public void cancelResist(){
+        towerResist = false;
     }
 }

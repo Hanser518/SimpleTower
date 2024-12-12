@@ -3,7 +3,9 @@ package frame.component;
 import common.Constant;
 import common.Element;
 import frame.FrameBase;
+import frame.component.scene.RoadComponent;
 import frame.component.scene.WallComponent;
+import frame.component.tower.LandComponent;
 import frame.component.tower.LightningComponent;
 import frame.pipeLine.GlobalMotionLine;
 import frame.pipeLine.GlobalParticleLine;
@@ -13,6 +15,7 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -75,19 +78,12 @@ public class CandidateComponent extends JPanel implements StanderComponent {
     }
 
     public static void addToComponent(JPanel component) {
-        Class<?> componentClass = component.getClass();
         try {
-            Constructor<?> constructor = componentClass.getConstructor();
-            Method getCost = componentClass.getMethod("getCost");
-            int cost = (int) getCost.invoke(constructor.newInstance());
-            String className = componentClass.getSimpleName();
-            JLabel label = new JLabel(cost + "|" + className);
-            JPanel panel = new JPanel();
-            panel.setLayout(new BorderLayout());
-            panel.add(label, BorderLayout.NORTH);
-            // panel.setBorder(component.getBorder());
-            addDragFunction(panel);
-            componentList.add(panel);
+            for (MouseListener ml : component.getMouseListeners()){
+                component.removeMouseListener(ml);
+            }
+            addDragFunction(component);
+            componentList.add(component);
             isChange = true;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -146,15 +142,23 @@ public class CandidateComponent extends JPanel implements StanderComponent {
     private static void registerTower(JPanel component) {
         SceneComponent sc = FrameBase.getSceneComponent();
         JPanel[][] panelMatrix = sc.getPanelMatrix();
-        int[][] sceneMatrix = sc.getSceneMatrix();
         if (compLocation.x < panelMatrix.length && compLocation.y < panelMatrix[0].length) {
-            if (sceneMatrix[compLocation.x][compLocation.y] == 1 && panelMatrix[compLocation.x][compLocation.y] != null) {
+            if (panelMatrix[compLocation.x][compLocation.y] != null) {
                 if (panelMatrix[compLocation.x][compLocation.y] instanceof WallComponent wc){
-                    if (wc.isDeploymentEnabled()){
+                    if (wc.isDeploymentEnabled(component)){
                         LightningComponent TC = new LightningComponent();
                         TC.setBounds(compLocation.x * UNIT_SIZE, compLocation.y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
                         TC.register(layerPanel, new Point(compLocation.x, compLocation.y), wc);
                         layerPanel.add(TC, COMPONENT_LAYER);
+                        componentList.remove(component);
+                        layerPanel.remove(component);
+                    }
+                } else if (panelMatrix[compLocation.x][compLocation.y] instanceof RoadComponent rc){
+                    if (rc.isDeploymentEnabled(component)){
+                        LandComponent LC = new LandComponent();
+                        LC.setBounds(compLocation.x * UNIT_SIZE, compLocation.y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
+                        LC.register(layerPanel, new Point(compLocation.x, compLocation.y), rc);
+                        layerPanel.add(LC, COMPONENT_LAYER);
                         componentList.remove(component);
                         layerPanel.remove(component);
                     }
@@ -188,7 +192,7 @@ public class CandidateComponent extends JPanel implements StanderComponent {
                 JPanel panel = componentList.get(index);
                 Point location = this.getLocation();
                 panel.setBounds((index) * (this.getHeight() + space) + location.x, location.y, this.getHeight(), this.getHeight());
-                panel.setBackground(new Color(120, 105, 105, 188));
+                panel.setBackground(new Color(120, 105, 105, 127));
                 Element.layerPanel.add(panel, Element.SCENE_LAYER);
             }
             isChange = false;

@@ -1,5 +1,8 @@
 package frame.component.scene;
 
+import frame.component.tower.LandComponent;
+import frame.component.tower.LightningComponent;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 
@@ -27,6 +30,18 @@ public class RoadComponent extends JPanel {
         } else {
             this.type = type;
             setDefaultStyle();
+        }
+    }
+
+    public boolean isDeploymentEnabled(JPanel component) {
+        if (component instanceof LandComponent) {
+            if (type == null) {
+                return true;
+            } else {
+                return type.equals(ROAD_STYLE1);
+            }
+        } else {
+            return false;
         }
     }
 
