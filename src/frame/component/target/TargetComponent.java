@@ -1,4 +1,4 @@
-package frame.component.impl;
+package frame.component.target;
 
 import entity.Direction;
 import frame.component.StanderComponent;
@@ -12,6 +12,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static common.Constant.UNIT_MOVE_COUNT;
 import static common.FrameConstant.*;
 import static frame.pipeLine.GlobalMotionLine.removeComponents;
 

@@ -8,10 +8,6 @@ public interface FrameConstant {
 
     Double HALF_SCREEN = 0.5;
 
-    Integer FRAME_REFRESH_INTERVAL = 60;
-
-    Integer UNIT_MOVE_COUNT = 15;
-
     Integer UNIT_SIZE = 45;
 
     Font MAIN_FONT = new Font("Microsoft YaHei", Font.BOLD, 15);

@@ -1,4 +1,4 @@
-package frame.component.impl;
+package frame.component.tower;
 
 import frame.component.StanderComponent;
 

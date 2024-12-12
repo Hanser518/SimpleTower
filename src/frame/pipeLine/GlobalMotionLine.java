@@ -5,13 +5,13 @@ import javax.swing.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import static common.FrameConstant.FRAME_REFRESH_INTERVAL;
+import static common.Constant.FRAME_REFRESH_INTERVAL;
 
 public class GlobalMotionLine {
     /**
      * 设置全局刷新率
      */
-    private static final int UPDATE_DELAY = 1000 / FRAME_REFRESH_INTERVAL;
+    private static int UPDATE_DELAY = 1000 / FRAME_REFRESH_INTERVAL;
 
     /**
      * 设置全局定时器
@@ -40,33 +40,40 @@ public class GlobalMotionLine {
 
     public static void initializeGlobalTimer() {
         if (GLOBAL_TIMER == null) {
-            GLOBAL_TIMER = new Timer(UPDATE_DELAY, actionEvent -> {
-                COUNT++;
-                // 统一更新所有组件的位置
-                for (JPanel component : components) {
-                    try {
-                        Method componentMotion = component.getClass().getDeclaredMethod("motion");
-                        componentMotion.invoke(component);
-                    } catch (Exception e) {
-                        System.out.println(COUNT + "-ERROR: " + e.getMessage());
-                    }
-                }
-                for (JPanel component : removeComponents) {
-                    try {
-                        Method getContainer = component.getClass().getDeclaredMethod("getContainer");
-                        JLayeredPane container = (JLayeredPane) getContainer.invoke(component);
-                        container.remove(component);
-                    } catch (Exception e) {
-                        System.out.println(COUNT + "-ERROR: " + e.getMessage());
-                    }
-                    components.remove(component);
-                }
-                components.addAll(prepareComponents);
-                removeComponents.clear();
-                prepareComponents.clear();
+            Thread lineThread = new Thread(() -> {
+                GLOBAL_TIMER = new Timer(UPDATE_DELAY, actionEvent -> {
+                    motion();
+                });
+                GLOBAL_TIMER.start();
             });
-            GLOBAL_TIMER.start();
+            lineThread.start();
         }
+    }
+
+    public static void motion() {
+        System.out.println(UPDATE_DELAY);
+        // 统一更新所有组件的位置
+        for (JPanel component : components) {
+            try {
+                Method componentMotion = component.getClass().getDeclaredMethod("motion");
+                componentMotion.invoke(component);
+            } catch (Exception e) {
+                System.out.println(COUNT + "-ERROR: " + e.getMessage());
+            }
+        }
+        for (JPanel component : removeComponents) {
+            try {
+                Method getContainer = component.getClass().getDeclaredMethod("getContainer");
+                JLayeredPane container = (JLayeredPane) getContainer.invoke(component);
+                container.remove(component);
+            } catch (Exception e) {
+                System.out.println(COUNT + "-ERROR: " + e.getMessage());
+            }
+            components.remove(component);
+        }
+        components.addAll(prepareComponents);
+        removeComponents.clear();
+        prepareComponents.clear();
     }
 
     public static void addToPrepareComponents(JPanel component) {
@@ -75,5 +82,21 @@ public class GlobalMotionLine {
 
     public static void addToComponents(JPanel component) {
         components.add(component);
+    }
+
+    public static int getComponentsCount() {
+        return components.size();
+    }
+
+    public static void pauseTimer() {
+        GLOBAL_TIMER.stop();
+    }
+
+    public static void continueTimer() {
+        GLOBAL_TIMER.start();
+    }
+
+    public static void slowTimer(){
+        GLOBAL_TIMER.setDelay(UPDATE_DELAY * 4);
     }
 }

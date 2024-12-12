@@ -19,6 +19,8 @@ import static common.FrameConstant.*;
 
 public class Element {
 
+    public static JFrame baseFrame;
+
     /**
      * 主容器，可能后面会调整为图层形式
      */

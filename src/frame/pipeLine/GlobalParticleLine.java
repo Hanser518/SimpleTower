@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * 粒子组件-GlobalParticleLine
  */
 import static common.Element.PARTICLE_LAYER;
-import static common.FrameConstant.FRAME_REFRESH_INTERVAL;
+import static common.Constant.FRAME_REFRESH_INTERVAL;
 import static common.FrameConstant.UNIT_SIZE;
 
 public class GlobalParticleLine extends JPanel {
@@ -17,17 +17,18 @@ public class GlobalParticleLine extends JPanel {
     /**
      * 设置全局刷新率
      */
-    private static final int UPDATE_DELAY = 1000 / FRAME_REFRESH_INTERVAL;
+    private static int UPDATE_DELAY = 1000 / FRAME_REFRESH_INTERVAL;
 
     /**
      * 设置全局定时器
      */
-    private static Timer globalTimer;
+    private static Timer GLOBAL_TIMER;
 
     /**
      * 设置组件列表
      */
     private static final ArrayList<GlobalParticleLine> components = new ArrayList<>();
+
     private static final ArrayList<GlobalParticleLine> removeComponents = new ArrayList<>();
 
     /**
@@ -140,7 +141,7 @@ public class GlobalParticleLine extends JPanel {
 
     public static void registerLineParticle(JLayeredPane container, Point start, Point end, Integer liveCycle) {
         int distance = (int) Math.sqrt(Math.pow(start.getX() - end.getX(), 2) + Math.pow(start.getY() - end.getY(), 2));
-        int count = distance / 18 + 1;
+        int count = distance / 20 + 1;
         int moveX = (int) ((start.getX() - end.getX()) / count);
         int moveY = (int) ((start.getY() - end.getY()) / count);
         for (int i = 0; i < count; i++) {
@@ -154,20 +155,26 @@ public class GlobalParticleLine extends JPanel {
 
 
     public static void initializeGlobalTimer() {
-        if (globalTimer == null) {
-            globalTimer = new Timer(UPDATE_DELAY, e -> {
-                // 统一更新所有组件的位置
-                for (GlobalParticleLine component : components) {
-                    component.updatePosition();
-                }
-                for (GlobalParticleLine component : removeComponents) {
-                    components.remove(component);
-                    container.remove(component);
-                }
-                removeComponents.clear();
+        if (GLOBAL_TIMER == null) {
+            Thread lineThread = new Thread(() -> {
+                GLOBAL_TIMER = new Timer(UPDATE_DELAY, e -> {
+                    motion();
+                });
+                GLOBAL_TIMER.start();
             });
-            globalTimer.start();
+            lineThread.start();
         }
+    }
+
+    public static void motion() {
+        for (GlobalParticleLine component : components) {
+            component.updatePosition();
+        }
+        for (GlobalParticleLine component : removeComponents) {
+            components.remove(component);
+            container.remove(component);
+        }
+        removeComponents.clear();
     }
 
     public static int getComponentsCount() {
@@ -198,5 +205,13 @@ public class GlobalParticleLine extends JPanel {
         if (scheduleValue > liveCycle) {
             removeComponents.add(this);
         }
+    }
+
+    public static void pauseTimer() {
+        GLOBAL_TIMER.stop();
+    }
+
+    public static void continueTimer() {
+        GLOBAL_TIMER.start();
     }
 }

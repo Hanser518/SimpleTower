@@ -1,8 +1,8 @@
 package frame.component;
 
 import common.Element;
-import frame.component.impl.LightningTowerComponent;
-import frame.component.impl.TargetComponent;
+import frame.component.target.TargetComponent;
+import frame.component.tower.LightningComponent;
 import frame.pipeLine.GlobalMotionLine;
 import frame.pipeLine.GlobalParticleLine;
 import method.map.BuildMap;
@@ -14,10 +14,11 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import static common.Constant.UNIT_MOVE_COUNT;
 import static common.Element.*;
 import static common.FrameConstant.*;
 
-public class SceneComponent extends JPanel {
+public class SceneComponent extends JPanel implements StanderComponent {
 
     private static final int interval = UNIT_MOVE_COUNT * 2;
 
@@ -31,11 +32,10 @@ public class SceneComponent extends JPanel {
 
     private Point sp = null, ep = null;
 
-    public Graphics backComponent;
-
     public SceneComponent(int width, int height) {
         super(null);
         this.setDoubleBuffered(true);
+        this.setBackground(new Color(0, 0, 0, 0));
         initScene(width, height);
         initContent();
     }
@@ -63,10 +63,10 @@ public class SceneComponent extends JPanel {
                 panelMatrix[i][j].setBounds(i * UNIT_SIZE, j * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
                 panelMatrix[i][j].setBackground(sceneMatrix[i][j] == 1 ? WALL_COLOR : ROAD_COLOR);
                 addFunctionClickTarget(panelMatrix[i][j], i, j);
-
                 layerPanel.add(panelMatrix[i][j], SCENE_LAYER);
             }
         }
+        layerPanel.add(this);
     }
 
     public void resetScene(int width, int height) {
@@ -106,19 +106,28 @@ public class SceneComponent extends JPanel {
                         }
                     }
                 } else if (SwingUtilities.isLeftMouseButton(e)) {
-                    if (sceneMatrix[x][y] == 1) {
-                        LightningTowerComponent TC = new LightningTowerComponent(0);
-                        TC.setBounds(x * UNIT_SIZE, y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-                        sceneMatrix[x][y] = 1;
-                        TC.register(layerPanel, new Point(x, y), 1);
-                        layerPanel.add(TC, COMPONENT_LAYER);
-                    }
+//                    if (sceneMatrix[x][y] == 1) {
+//                        LightningComponent TC = new LightningComponent();
+//                        TC.setBounds(x * UNIT_SIZE, y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
+//                        sceneMatrix[x][y] = 1;
+//                        TC.register(layerPanel, new Point(x, y), 1);
+//                        layerPanel.add(TC, COMPONENT_LAYER);
+//                    }
                     GlobalParticleLine.registerBrokenParticle(layerPanel, panel, panel.getWidth());
                 }
             }
         });
     }
 
+    public JPanel[][] getPanelMatrix(){
+        return panelMatrix;
+    }
+
+    public int[][] getSceneMatrix(){
+        return sceneMatrix;
+    }
+
+    @Override
     public void motion() {
         if (count < interval)
             count++;

@@ -1,29 +1,28 @@
-package frame.component.impl;
+package frame.component.tower;
 
 import common.Element;
 import entity.Direction;
 import frame.component.StanderComponent;
+import frame.component.target.TargetComponent;
 import frame.pipeLine.GlobalMotionLine;
 import frame.pipeLine.GlobalParticleLine;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import static common.FrameConstant.MAIN_FONT;
-import static common.FrameConstant.UNIT_SIZE;
+import static common.Constant.FRAME_REFRESH_INTERVAL;
+import static common.FrameConstant.*;
 import static frame.pipeLine.GlobalMotionLine.components;
 
-public class LightningTowerComponent extends JPanel implements StanderComponent {
+public class LightningComponent extends JPanel implements StanderComponent {
 
     /**
-     * 类型标识
+     * 组件消耗
      */
-    public static final Integer TOWER_TYPE_TYPE1 = 1;
+    private static final int cost = 5;
 
     /**
      * 点位标识
@@ -34,11 +33,6 @@ public class LightningTowerComponent extends JPanel implements StanderComponent 
     public Direction getTowerLocation() {
         return towerLocation;
     }
-
-    /**
-     * 类型
-     */
-    private Integer type = null;
 
     /**
      * 容器
@@ -53,7 +47,7 @@ public class LightningTowerComponent extends JPanel implements StanderComponent 
     /**
      * atk value
      */
-    private Integer atkValue;
+    private final Integer atkValue = 5;
 
     /**
      * atk load
@@ -63,17 +57,16 @@ public class LightningTowerComponent extends JPanel implements StanderComponent 
     /**
      * atk interval
      */
-    private Integer atkInterval;
+    private final Integer atkInterval = FRAME_REFRESH_INTERVAL / 2;
 
     /**
      * atk Range
      */
-    private Integer atkRange;
+    private final Integer atkRange = 5;
 
-    public LightningTowerComponent(Integer type) {
+    public LightningComponent() {
         super(null);
         setBackground(new Color(70, 58, 140, 0));
-        atkRange = 5;
         setBorder(new Border() {
             @Override
             public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
@@ -141,7 +134,6 @@ public class LightningTowerComponent extends JPanel implements StanderComponent 
             }
             if (prepare != null) {
                 target = prepare;
-                atkInterval = atkInterval == null ? 10 : atkInterval;
                 atkLoad = 0;
             }
         } else {
@@ -154,7 +146,7 @@ public class LightningTowerComponent extends JPanel implements StanderComponent 
                     target = null;
                 } else {
                     if (atkLoad > atkInterval) {
-                        int targetValue = target.getRestValue(getAtkValue());
+                        int targetValue = target.getRestValue(atkValue);
                         Point towerLocation = getLocation();
                         Point targetLocation = target.getLocation();
                         GlobalParticleLine.registerLineParticle(Element.layerPanel, towerLocation, targetLocation, 10);
@@ -170,17 +162,8 @@ public class LightningTowerComponent extends JPanel implements StanderComponent 
         }
     }
 
-    /**
-     * atkValue计算
-     *
-     * @return
-     */
-    public int getAtkValue() {
-        if (atkValue == null) {
-            return 1;
-        } else {
-            return atkValue;
-        }
+    public static int getCost() {
+        return cost;
     }
 
     private void addOperationMenu(JPanel panel) {

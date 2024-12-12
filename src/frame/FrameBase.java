@@ -2,6 +2,8 @@ package frame;
 
 import common.Element;
 import frame.annotation.InitMethod;
+import frame.component.CandidateComponent;
+import frame.component.tower.LightningComponent;
 import frame.pipeLine.GlobalParticleLine;
 import frame.component.SceneComponent;
 import frame.pipeLine.GlobalMotionLine;
@@ -24,7 +26,9 @@ public class FrameBase extends JFrame implements ActionListener {
 
     public static JPanel operationPanel;
 
-    public static SceneComponent sc;
+    public static SceneComponent sceneComponent;
+
+    public static CandidateComponent candidateComponent;
 
     public static void main(String[] args) {
         new FrameBase();
@@ -51,12 +55,15 @@ public class FrameBase extends JFrame implements ActionListener {
         init();
         setVisible(true);
         freshTimer.start();
+        baseFrame = this;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         SwingUtilities.invokeLater(this::repaint);
-        componentCount.setText("Count: " + GlobalMotionLine.components.size());
+        componentCount.setText("Count: " + GlobalMotionLine.getComponentsCount() +
+                " | " + GlobalParticleLine.getComponentsCount() +
+                " | " + CandidateComponent.getCompPoint());
     }
 
     private void init() {
@@ -85,13 +92,23 @@ public class FrameBase extends JFrame implements ActionListener {
         GlobalMotionLine.initializeGlobalTimer();
 
         // 初始化组件
-        sc = new SceneComponent(8, 6);
-        GlobalMotionLine.addToPrepareComponents(sc);
+        sceneComponent = new SceneComponent(8, 6);
+        candidateComponent = new CandidateComponent();
+        candidateComponent.setBounds(0, sceneComponent.getHeight(), sceneComponent.getWidth(), 50);
+
+        layerPanel.add(candidateComponent, SCENE_LAYER);
+
+        GlobalMotionLine.addToPrepareComponents(sceneComponent);
+        GlobalMotionLine.addToPrepareComponents(candidateComponent);
 
         add(operationPanel, BorderLayout.WEST);
         add(layerPanel, BorderLayout.CENTER);
         add(componentCount, BorderLayout.NORTH);
 
+    }
+
+    public static SceneComponent getSceneComponent(){
+        return sceneComponent;
     }
 
     @InitMethod
@@ -103,11 +120,24 @@ public class FrameBase extends JFrame implements ActionListener {
         editButton.addActionListener(ac -> {
             int w = (int) (Math.random() * 20 + 7);
             int h = (int) (Math.random() * 10 + 7);
-            sc.resetScene((w - 1) / 2, (h - 1) / 2);
+            sceneComponent.resetScene((w - 1) / 2, (h - 1) / 2);
+            candidateComponent = new CandidateComponent();
+            candidateComponent.setBounds(0, sceneComponent.getHeight(), sceneComponent.getWidth(), UNIT_SIZE);
+            GlobalMotionLine.addToPrepareComponents(candidateComponent);
+            layerPanel.add(candidateComponent, SCENE_LAYER);
+            repaint();
+        });
+
+        JButton addButton = new JButton("add to candidate");
+        addButton.addActionListener(ac -> {
+            CandidateComponent.addToComponent(new LightningComponent());
+            System.out.println(CandidateComponent.getComponentNum());
+            revalidate();
             repaint();
         });
 
         // 将组件添加到面板中
         operationPanel.add(editButton);
+        operationPanel.add(addButton);
     }
 }
