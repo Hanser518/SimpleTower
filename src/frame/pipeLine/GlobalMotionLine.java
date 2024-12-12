@@ -51,7 +51,6 @@ public class GlobalMotionLine {
     }
 
     public static void motion() {
-        System.out.println(UPDATE_DELAY);
         // 统一更新所有组件的位置
         for (JPanel component : components) {
             try {

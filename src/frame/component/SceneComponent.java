@@ -1,6 +1,8 @@
 package frame.component;
 
 import common.Element;
+import frame.component.scene.RoadComponent;
+import frame.component.scene.WallComponent;
 import frame.component.target.TargetComponent;
 import frame.component.tower.LightningComponent;
 import frame.pipeLine.GlobalMotionLine;
@@ -59,9 +61,12 @@ public class SceneComponent extends JPanel implements StanderComponent {
                         sceneMatrix[i][j] = 0;
                     }
                 }
-                panelMatrix[i][j] = new JPanel(null);
-                panelMatrix[i][j].setBounds(i * UNIT_SIZE, j * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-                panelMatrix[i][j].setBackground(sceneMatrix[i][j] == 1 ? WALL_COLOR : ROAD_COLOR);
+                if (sceneMatrix[i][j] == 1){
+                    panelMatrix[i][j] = new WallComponent(1);
+                } else {
+                    panelMatrix[i][j] = new RoadComponent(1);
+                }
+                panelMatrix[i][j].setLocation(i * UNIT_SIZE, j * UNIT_SIZE);
                 addFunctionClickTarget(panelMatrix[i][j], i, j);
                 layerPanel.add(panelMatrix[i][j], SCENE_LAYER);
             }
@@ -99,20 +104,14 @@ public class SceneComponent extends JPanel implements StanderComponent {
                             // sceneMatrix[x][y] = -1;
                         } else if (sp != null && ep == null) {
                             ep = new Point(x, y);
+                            PointComponent pc = new PointComponent(sp, ep);
+                            pc.register();
+                            sp = null;
+                            ep = null;
                             panelMatrix[x][y].setBackground(new Color(211, 10, 10, 142));
-                        } else {
-                            sp = new Point(x, y);
-                            panelMatrix[x][y].setBackground(new Color(69, 109, 169, 129));
                         }
                     }
                 } else if (SwingUtilities.isLeftMouseButton(e)) {
-//                    if (sceneMatrix[x][y] == 1) {
-//                        LightningComponent TC = new LightningComponent();
-//                        TC.setBounds(x * UNIT_SIZE, y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-//                        sceneMatrix[x][y] = 1;
-//                        TC.register(layerPanel, new Point(x, y), 1);
-//                        layerPanel.add(TC, COMPONENT_LAYER);
-//                    }
                     GlobalParticleLine.registerBrokenParticle(layerPanel, panel, panel.getWidth());
                 }
             }
@@ -129,18 +128,5 @@ public class SceneComponent extends JPanel implements StanderComponent {
 
     @Override
     public void motion() {
-        if (count < interval)
-            count++;
-        else {
-            if (ep != null && sp != null) {
-                TargetComponent TC = new TargetComponent();
-                TC.setBounds(sp.x * UNIT_SIZE, sp.y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-                TC.setBackground(new Color(147, 44, 44, 255));
-                TC.register(layerPanel, sp, ep);
-                this.add(TC);
-                layerPanel.add(TC, COMPONENT_LAYER);
-            }
-            count = 0;
-        }
     }
 }

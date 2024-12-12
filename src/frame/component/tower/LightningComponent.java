@@ -52,12 +52,14 @@ public class LightningComponent extends JPanel implements StanderComponent {
     /**
      * atk load
      */
-    private int atkLoad = 0;
+    private int atkLoad = 20;
 
     /**
      * atk interval
      */
     private final Integer atkInterval = FRAME_REFRESH_INTERVAL / 2;
+
+    private JPanel locPanel;
 
     /**
      * atk Range
@@ -72,10 +74,21 @@ public class LightningComponent extends JPanel implements StanderComponent {
             public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
                 int wSize = UNIT_SIZE / 8;
                 int hSize = UNIT_SIZE / 8;
-                g.setColor(new Color(70, 58, 140, 127));
-                g.fillRect(wSize, hSize * 3, wSize, hSize);
-                g.fillRect(wSize * 2, hSize * 5, wSize, hSize);
-                g.fillRect(wSize * 4, hSize, wSize, hSize);
+                Graphics2D g2d = (Graphics2D) g;
+
+                g2d.setColor(new Color(212, 194, 242, 189));
+                g2d.fillRoundRect(x, y, width - 1, height - 1, wSize * 4, hSize * 4);
+
+                g2d.setColor(new Color(212, 194, 242, 255));
+                g2d.drawRoundRect(x, y, width - 1, height - 1, wSize * 4, hSize * 4);
+
+                g2d.setColor(new Color(63, 57, 154, 255));
+
+                g2d.fillRect(wSize, hSize, wSize, hSize);
+                g2d.fillRect(wSize * 2, hSize * 2, wSize * 3, hSize * 3);
+                g2d.fillRect(wSize * 4, hSize * 4, wSize * 2, hSize * 2);
+                g2d.fillRect(wSize * 6, hSize * 6, wSize, hSize);
+                g2d.fillRect(wSize * 7, hSize * 7, wSize, hSize);
             }
 
             @Override
@@ -94,9 +107,10 @@ public class LightningComponent extends JPanel implements StanderComponent {
     /**
      * 注册组件
      */
-    public void register(JLayeredPane panel, Point location, int dir) {
+    public void register(JLayeredPane panel, Point location, JPanel locPanel) {
         container = panel;
-        this.towerLocation = new Direction(location, dir);
+        this.towerLocation = new Direction(location, -1);
+        this.locPanel = locPanel;
         GlobalParticleLine.registerBrokenParticle(container, this, this.getWidth());
         GlobalMotionLine.addToPrepareComponents(this);
     }
@@ -134,7 +148,6 @@ public class LightningComponent extends JPanel implements StanderComponent {
             }
             if (prepare != null) {
                 target = prepare;
-                atkLoad = 0;
             }
         } else {
             if (!target.isAliveState()) {
@@ -186,7 +199,7 @@ public class LightningComponent extends JPanel implements StanderComponent {
         });
     }
 
-    private static JMenuItem getDeleteItem(JPanel panel) {
+    private JMenuItem getDeleteItem(JPanel panel) {
         // 创建删除菜单项
         JMenuItem deleteItem = new JMenuItem("删除");
         deleteItem.setFont(MAIN_FONT);
@@ -196,6 +209,7 @@ public class LightningComponent extends JPanel implements StanderComponent {
         deleteItem.addActionListener(ac -> {
             GlobalMotionLine.removeComponents.add(panel);
             container.remove(panel);
+            container.add(locPanel, Element.COMPONENT_LAYER);
         });
         return deleteItem;
     }

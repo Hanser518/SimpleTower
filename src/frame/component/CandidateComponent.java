@@ -2,8 +2,8 @@ package frame.component;
 
 import common.Constant;
 import common.Element;
-import common.FrameConstant;
 import frame.FrameBase;
+import frame.component.scene.WallComponent;
 import frame.component.tower.LightningComponent;
 import frame.pipeLine.GlobalMotionLine;
 import frame.pipeLine.GlobalParticleLine;
@@ -28,7 +28,7 @@ public class CandidateComponent extends JPanel implements StanderComponent {
     /**
      * 组件点数
      */
-    private static int compPoint = 0;
+    private static int compPoint = 10;
 
     /**
      * 进度
@@ -99,7 +99,6 @@ public class CandidateComponent extends JPanel implements StanderComponent {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e)) {
-                    System.out.println("CLICK");
                     initialClick = e.getPoint(); // 记录初始点击位置
                     GlobalMotionLine.pauseTimer();
                     GlobalParticleLine.pauseTimer();
@@ -110,24 +109,10 @@ public class CandidateComponent extends JPanel implements StanderComponent {
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e)) {
-                    System.out.println("RELEASE");
-                    SceneComponent sc = FrameBase.getSceneComponent();
-                    JPanel[][] panelMatrix = sc.getPanelMatrix();
-                    int[][] sceneMatrix = sc.getSceneMatrix();
-                    if (compLocation.x < panelMatrix.length && compLocation.y < panelMatrix[0].length){
-                        if (sceneMatrix[compLocation.x][compLocation.y] == 1) {
-                            LightningComponent TC = new LightningComponent();
-                            TC.setBounds(compLocation.x * UNIT_SIZE, compLocation.y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-                            TC.register(layerPanel, new Point(compLocation.x, compLocation.y), 1);
-                            layerPanel.add(TC, COMPONENT_LAYER);
-                            componentList.remove(component);
-                            layerPanel.remove(component);
-                            layerPanel.remove(panelMatrix[compLocation.x][compLocation.y]);
-                        }
-                    }
+                    registerTower(component);
                     GlobalMotionLine.continueTimer();
                     GlobalParticleLine.continueTimer();
-                   //  Constant.FRAME_REFRESH_INTERVAL /= 3;
+                    //  Constant.FRAME_REFRESH_INTERVAL /= 3;
                     isChange = true;
                 }
             }
@@ -158,6 +143,26 @@ public class CandidateComponent extends JPanel implements StanderComponent {
         });
     }
 
+    private static void registerTower(JPanel component) {
+        SceneComponent sc = FrameBase.getSceneComponent();
+        JPanel[][] panelMatrix = sc.getPanelMatrix();
+        int[][] sceneMatrix = sc.getSceneMatrix();
+        if (compLocation.x < panelMatrix.length && compLocation.y < panelMatrix[0].length) {
+            if (sceneMatrix[compLocation.x][compLocation.y] == 1 && panelMatrix[compLocation.x][compLocation.y] != null) {
+                if (panelMatrix[compLocation.x][compLocation.y] instanceof WallComponent wc){
+                    if (wc.isDeploymentEnabled()){
+                        LightningComponent TC = new LightningComponent();
+                        TC.setBounds(compLocation.x * UNIT_SIZE, compLocation.y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
+                        TC.register(layerPanel, new Point(compLocation.x, compLocation.y), wc);
+                        layerPanel.add(TC, COMPONENT_LAYER);
+                        componentList.remove(component);
+                        layerPanel.remove(component);
+                    }
+                }
+            }
+        }
+    }
+
     public static int getComponentNum() {
         return componentList.size();
     }
@@ -166,12 +171,15 @@ public class CandidateComponent extends JPanel implements StanderComponent {
         return compPoint;
     }
 
+    public static void deleteCompPoint(int compPoint) {
+        CandidateComponent.compPoint -= compPoint;
+    }
+
 
     @Override
     public void motion() {
         scheduleValue++;
         if (isChange) {
-            System.out.println("RESET");
             for (Component c : this.getComponents()) {
                 Element.layerPanel.remove(c);
             }

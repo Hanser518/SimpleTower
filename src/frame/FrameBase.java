@@ -128,12 +128,15 @@ public class FrameBase extends JFrame implements ActionListener {
             repaint();
         });
 
-        JButton addButton = new JButton("add to candidate");
+        JButton addButton = new JButton("BUY COMP");
         addButton.addActionListener(ac -> {
-            CandidateComponent.addToComponent(new LightningComponent());
-            System.out.println(CandidateComponent.getComponentNum());
-            revalidate();
-            repaint();
+            if (CandidateComponent.getCompPoint() >= LightningComponent.getCost()){
+                CandidateComponent.addToComponent(new LightningComponent());
+                CandidateComponent.deleteCompPoint(LightningComponent.getCost());
+                System.out.println(CandidateComponent.getComponentNum());
+                revalidate();
+                repaint();
+            }
         });
 
         // 将组件添加到面板中

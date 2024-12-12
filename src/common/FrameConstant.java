@@ -14,5 +14,5 @@ public interface FrameConstant {
 
     Color ROAD_COLOR = new Color(218, 218, 218, 255);
 
-    Color WALL_COLOR = new Color(101, 94, 90, 255);
+    Color WALL_COLOR = new Color(64, 62, 62, 255);
 }
