@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import static common.Constant.FRAME_REFRESH_INTERVAL;
 
-public class GlobalMotionLine {
+public class GlobalIncidentLine {
     /**
      * 设置全局刷新率
      */
@@ -54,7 +54,7 @@ public class GlobalMotionLine {
         // 统一更新所有组件的位置
         for (JPanel component : components) {
             try {
-                Method componentMotion = component.getClass().getDeclaredMethod("motion");
+                Method componentMotion = component.getClass().getDeclaredMethod("incident");
                 componentMotion.invoke(component);
             } catch (Exception e) {
                 System.out.println(COUNT + "-ERROR: " + e.getMessage());

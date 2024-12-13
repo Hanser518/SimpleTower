@@ -1,10 +1,8 @@
-package frame.component.target;
+package frame.component.interaction.target;
 
-import common.Element;
 import entity.Direction;
-import frame.component.StanderComponent;
-import frame.component.tower.LandComponent;
-import frame.pipeLine.GlobalMotionLine;
+import frame.component.incident.StanderIncidentComponent;
+import frame.pipeLine.GlobalIncidentLine;
 import frame.pipeLine.GlobalParticleLine;
 import method.way.BuildSolution;
 
@@ -18,9 +16,9 @@ import java.util.List;
 import static common.Constant.FRAME_REFRESH_INTERVAL;
 import static common.Constant.UNIT_MOVE_COUNT;
 import static common.FrameConstant.*;
-import static frame.pipeLine.GlobalMotionLine.removeComponents;
+import static frame.pipeLine.GlobalIncidentLine.removeComponents;
 
-public class TargetComponent extends JPanel implements StanderComponent {
+public class TargetComponent extends JPanel implements StanderIncidentComponent {
 
     /**
      * 地图数据
@@ -141,11 +139,11 @@ public class TargetComponent extends JPanel implements StanderComponent {
         targetLocation = motionPath.get(0);
         // 获取帧位移量
         frameMotionValue = UNIT_SIZE / UNIT_MOVE_COUNT;
-        GlobalMotionLine.addToPrepareComponents(this);
+        GlobalIncidentLine.addToPrepareComponents(this);
     }
 
     @Override
-    public void motion() {
+    public void incident() {
         // 检测是否为阻挡状态
         if (!towerResist) {
             // 获取当前坐标

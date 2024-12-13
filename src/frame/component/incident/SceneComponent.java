@@ -1,11 +1,11 @@
-package frame.component;
+package frame.component.incident;
 
 import common.Element;
+import frame.component.interaction.tower.LightningBaseStander;
 import frame.component.scene.RoadComponent;
 import frame.component.scene.WallComponent;
-import frame.component.target.TargetComponent;
-import frame.component.tower.LightningComponent;
-import frame.pipeLine.GlobalMotionLine;
+import frame.component.interaction.target.TargetComponent;
+import frame.pipeLine.GlobalIncidentLine;
 import frame.pipeLine.GlobalParticleLine;
 import method.map.BuildMap;
 import method.map.TransMap;
@@ -20,7 +20,7 @@ import static common.Constant.UNIT_MOVE_COUNT;
 import static common.Element.*;
 import static common.FrameConstant.*;
 
-public class SceneComponent extends JPanel implements StanderComponent {
+public class SceneComponent extends JPanel implements StanderIncidentComponent {
 
     private static final int interval = UNIT_MOVE_COUNT * 2;
 
@@ -82,8 +82,8 @@ public class SceneComponent extends JPanel implements StanderComponent {
         TargetComponent.setMatrix(sceneMatrix);
         this.setBounds(0, 0, sceneWidth * UNIT_SIZE, sceneHeight * UNIT_SIZE);
         Element.layerPanel.removeAll();
-        GlobalMotionLine.components.clear();
-        GlobalMotionLine.components.add(this);
+        GlobalIncidentLine.components.clear();
+        GlobalIncidentLine.components.add(this);
         initContent();
         sp = null;
         ep = null;
@@ -112,6 +112,10 @@ public class SceneComponent extends JPanel implements StanderComponent {
                         }
                     }
                 } else if (SwingUtilities.isLeftMouseButton(e)) {
+                    LightningBaseStander LBS = new LightningBaseStander();
+                    LBS.setLocation(new Point(x, y), panel);
+                    LBS.register(layerPanel);
+                    LBS.setLocation(x * UNIT_SIZE, y * UNIT_SIZE);
                     GlobalParticleLine.registerBrokenParticle(layerPanel, panel, panel.getWidth());
                 }
             }
@@ -127,6 +131,6 @@ public class SceneComponent extends JPanel implements StanderComponent {
     }
 
     @Override
-    public void motion() {
+    public void incident() {
     }
 }

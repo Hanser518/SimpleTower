@@ -1,11 +1,10 @@
-package frame.component.tower;
+package frame.component.interaction.tower;
 
 import common.Element;
 import entity.Direction;
-import frame.component.StanderComponent;
-import frame.component.scene.RoadComponent;
-import frame.component.target.TargetComponent;
-import frame.pipeLine.GlobalMotionLine;
+import frame.component.incident.StanderIncidentComponent;
+import frame.component.interaction.target.TargetComponent;
+import frame.pipeLine.GlobalIncidentLine;
 import frame.pipeLine.GlobalParticleLine;
 
 import javax.swing.*;
@@ -14,10 +13,10 @@ import java.awt.*;
 
 import static common.Constant.FRAME_REFRESH_INTERVAL;
 import static common.FrameConstant.UNIT_SIZE;
-import static frame.pipeLine.GlobalMotionLine.components;
-import static frame.pipeLine.GlobalMotionLine.removeComponents;
+import static frame.pipeLine.GlobalIncidentLine.components;
+import static frame.pipeLine.GlobalIncidentLine.removeComponents;
 
-public class LandComponent extends JPanel implements StanderComponent {
+public class LandComponent extends JPanel implements StanderIncidentComponent {
     /**
      * 容器
      */
@@ -107,11 +106,11 @@ public class LandComponent extends JPanel implements StanderComponent {
         this.towerLocation = new Direction(location, -1);
         this.locPanel = locPanel;
         GlobalParticleLine.registerBrokenParticle(container, this, this.getWidth());
-        GlobalMotionLine.addToPrepareComponents(this);
+        GlobalIncidentLine.addToPrepareComponents(this);
     }
 
     @Override
-    public void motion() {
+    public void incident() {
         if (components.isEmpty()) {
             return;
         }

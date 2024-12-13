@@ -2,12 +2,14 @@ package frame;
 
 import common.Element;
 import frame.annotation.InitMethod;
-import frame.component.CandidateComponent;
-import frame.component.tower.LandComponent;
-import frame.component.tower.LightningComponent;
+import frame.component.incident.CandidateComponent;
+import frame.component.interaction.StanderInteractionComponent;
+import frame.component.interaction.tower.LandComponent;
+import frame.component.interaction.tower.LightningComponent;
+import frame.pipeLine.GlobalInteractionLine;
 import frame.pipeLine.GlobalParticleLine;
-import frame.component.SceneComponent;
-import frame.pipeLine.GlobalMotionLine;
+import frame.component.incident.SceneComponent;
+import frame.pipeLine.GlobalIncidentLine;
 
 import javax.swing.*;
 import java.awt.*;
@@ -66,7 +68,9 @@ public class FrameBase extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         SwingUtilities.invokeLater(this::repaint);
-        componentCount.setText("Count: " + GlobalMotionLine.getComponentsCount() +
+        componentCount.setText("Count: " + GlobalIncidentLine.getComponentsCount() +
+                " | " + GlobalInteractionLine.tower.size() +
+                " | " + GlobalInteractionLine.target.size() +
                 " | " + GlobalParticleLine.getComponentsCount() +
                 " | " + CandidateComponent.getCompPoint());
     }
@@ -94,17 +98,21 @@ public class FrameBase extends JFrame implements ActionListener {
         }
         // 初始化管线
         GlobalParticleLine.initializeGlobalTimer();
-        GlobalMotionLine.initializeGlobalTimer();
+        GlobalIncidentLine.initializeGlobalTimer();
+        GlobalInteractionLine.initializeGlobalTimer();
 
         // 初始化组件
         sceneComponent = new SceneComponent(8, 6);
         candidateComponent = new CandidateComponent();
-        candidateComponent.setBounds(0, sceneComponent.getHeight(), sceneComponent.getWidth(), 50);
+        candidateComponent.setBounds(0, sceneComponent.getHeight(), sceneComponent.getWidth(), UNIT_SIZE);
+
+        StanderInteractionComponent.setMatrix(sceneComponent.getSceneMatrix());
+
 
         layerPanel.add(candidateComponent, SCENE_LAYER);
 
-        GlobalMotionLine.addToPrepareComponents(sceneComponent);
-        GlobalMotionLine.addToPrepareComponents(candidateComponent);
+        GlobalIncidentLine.addToPrepareComponents(sceneComponent);
+        GlobalIncidentLine.addToPrepareComponents(candidateComponent);
 
         add(operationPanel, BorderLayout.WEST);
         add(layerPanel, BorderLayout.CENTER);
@@ -128,7 +136,7 @@ public class FrameBase extends JFrame implements ActionListener {
             sceneComponent.resetScene((w - 1) / 2, (h - 1) / 2);
             candidateComponent = new CandidateComponent();
             candidateComponent.setBounds(0, sceneComponent.getHeight(), sceneComponent.getWidth(), UNIT_SIZE);
-            GlobalMotionLine.addToPrepareComponents(candidateComponent);
+            GlobalIncidentLine.addToPrepareComponents(candidateComponent);
             layerPanel.add(candidateComponent, SCENE_LAYER);
             repaint();
         });

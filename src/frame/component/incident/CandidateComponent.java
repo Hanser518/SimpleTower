@@ -1,13 +1,13 @@
-package frame.component;
+package frame.component.incident;
 
 import common.Constant;
 import common.Element;
 import frame.FrameBase;
 import frame.component.scene.RoadComponent;
 import frame.component.scene.WallComponent;
-import frame.component.tower.LandComponent;
-import frame.component.tower.LightningComponent;
-import frame.pipeLine.GlobalMotionLine;
+import frame.component.interaction.tower.LandComponent;
+import frame.component.interaction.tower.LightningComponent;
+import frame.pipeLine.GlobalIncidentLine;
 import frame.pipeLine.GlobalParticleLine;
 
 import javax.swing.*;
@@ -17,8 +17,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +24,7 @@ import static common.Element.COMPONENT_LAYER;
 import static common.Element.layerPanel;
 import static common.FrameConstant.UNIT_SIZE;
 
-public class CandidateComponent extends JPanel implements StanderComponent {
+public class CandidateComponent extends JPanel implements StanderIncidentComponent {
 
     /**
      * 组件点数
@@ -96,7 +94,7 @@ public class CandidateComponent extends JPanel implements StanderComponent {
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e)) {
                     initialClick = e.getPoint(); // 记录初始点击位置
-                    GlobalMotionLine.pauseTimer();
+                    GlobalIncidentLine.pauseTimer();
                     GlobalParticleLine.pauseTimer();
                     // Constant.FRAME_REFRESH_INTERVAL *= 3;
                 }
@@ -106,7 +104,7 @@ public class CandidateComponent extends JPanel implements StanderComponent {
             public void mouseReleased(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e)) {
                     registerTower(component);
-                    GlobalMotionLine.continueTimer();
+                    GlobalIncidentLine.continueTimer();
                     GlobalParticleLine.continueTimer();
                     //  Constant.FRAME_REFRESH_INTERVAL /= 3;
                     isChange = true;
@@ -181,7 +179,7 @@ public class CandidateComponent extends JPanel implements StanderComponent {
 
 
     @Override
-    public void motion() {
+    public void incident() {
         scheduleValue++;
         if (isChange) {
             for (Component c : this.getComponents()) {

@@ -1,10 +1,10 @@
-package frame.component.tower;
+package frame.component.interaction.tower;
 
 import common.Element;
 import entity.Direction;
-import frame.component.StanderComponent;
-import frame.component.target.TargetComponent;
-import frame.pipeLine.GlobalMotionLine;
+import frame.component.incident.StanderIncidentComponent;
+import frame.component.interaction.target.TargetComponent;
+import frame.pipeLine.GlobalIncidentLine;
 import frame.pipeLine.GlobalParticleLine;
 
 import javax.swing.*;
@@ -15,9 +15,9 @@ import java.awt.event.MouseEvent;
 
 import static common.Constant.FRAME_REFRESH_INTERVAL;
 import static common.FrameConstant.*;
-import static frame.pipeLine.GlobalMotionLine.components;
+import static frame.pipeLine.GlobalIncidentLine.components;
 
-public class LightningComponent extends JPanel implements StanderComponent {
+public class LightningComponent extends JPanel implements StanderIncidentComponent {
 
     /**
      * 组件消耗
@@ -112,7 +112,7 @@ public class LightningComponent extends JPanel implements StanderComponent {
         this.towerLocation = new Direction(location, -1);
         this.locPanel = locPanel;
         GlobalParticleLine.registerBrokenParticle(container, this, this.getWidth());
-        GlobalMotionLine.addToPrepareComponents(this);
+        GlobalIncidentLine.addToPrepareComponents(this);
     }
 
     /**
@@ -128,7 +128,7 @@ public class LightningComponent extends JPanel implements StanderComponent {
      * 事务（暂定，后面可能会根据type执行不同的事务）
      */
     @Override
-    public void motion() {
+    public void incident() {
         if (components.isEmpty()) {
             return;
         }
@@ -207,7 +207,7 @@ public class LightningComponent extends JPanel implements StanderComponent {
         deleteItem.setMargin(new Insets(2, 2, 2, 2));
         deleteItem.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         deleteItem.addActionListener(ac -> {
-            GlobalMotionLine.removeComponents.add(panel);
+            GlobalIncidentLine.removeComponents.add(panel);
             container.remove(panel);
             container.add(locPanel, Element.COMPONENT_LAYER);
         });

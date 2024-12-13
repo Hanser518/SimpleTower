@@ -1,6 +1,6 @@
 package frame.component.scene;
 
-import frame.component.tower.LightningComponent;
+import frame.component.interaction.tower.LightningComponent;
 
 import javax.swing.*;
 import javax.swing.border.Border;
