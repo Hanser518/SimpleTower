@@ -8,6 +8,8 @@ import frame.pipeLine.GlobalParticleLine;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static common.Element.COMPONENT_LAYER;
 import static common.FrameConstant.UNIT_SIZE;
@@ -49,7 +51,7 @@ public class Lightning extends StanderInteractionComponent {
 
     @Override
     protected boolean isSearchingForInteraction() {
-        return interactionObjects.isEmpty() || interactionObjects.size() < 2;
+        return interactionObjects.isEmpty();
     }
 
     @Override
@@ -73,30 +75,36 @@ public class Lightning extends StanderInteractionComponent {
     @Override
     protected void triggerInteractionEvent() {
         if (!interactionObjects.isEmpty()) {
-            for (StanderInteractionComponent comp : interactionObjects) {
-                // 判断状态
-                if (comp.isAliveState()) {
-                    // 判断是否超出范围
-                    Point compLocation = comp.getLocationOnScreen();
-                    if (calcDistance(this.getLocationOnScreen(), compLocation) > atkRange * UNIT_SIZE) {
-                        interactionObjects.remove(comp);
-                    } else {
-                        if (atkLoad > atkInterval) {
-                            int targetValue = comp.getRestEndurance(atkValue - interactionObjects.size() + 1);
-                            Point towerLocation = getLocation();
-                            Point targetLocation = comp.getLocation();
-                            GlobalParticleLine.registerLineParticle(Element.layerPanel, towerLocation, targetLocation, 10);
-                            if (targetValue < 0) {
-                                interactionObjects.remove(comp);
-                            }
-                            atkLoad = 0;
-                        } else {
-                            atkLoad += 10;
-                        }
-                    }
+            List<StanderInteractionComponent> removeList = new ArrayList<>();
+            interactionEvent(removeList);
+            removeList.forEach(interactionObjects::remove);
+        }
+    }
+
+    private void interactionEvent(List<StanderInteractionComponent> removeList){
+        for (StanderInteractionComponent comp : interactionObjects) {
+            // 判断状态
+            if (comp.isAliveState()) {
+                // 判断是否超出范围
+                Point compLocation = comp.getLocationOnScreen();
+                if (calcDistance(this.getLocationOnScreen(), compLocation) > atkRange * UNIT_SIZE) {
+                    removeList.add(comp);
                 } else {
-                    interactionObjects.remove(comp);
+                    if (atkLoad > atkInterval) {
+                        int targetValue = comp.getRestEndurance(atkValue - interactionObjects.size() + 1);
+                        Point towerLocation = getLocation();
+                        Point targetLocation = comp.getLocation();
+                        GlobalParticleLine.registerLineParticle(Element.layerPanel, towerLocation, targetLocation, 10);
+                        if (targetValue < 0) {
+                            removeList.add(comp);
+                        }
+                        atkLoad = 0;
+                    } else {
+                        atkLoad += 10;
+                    }
                 }
+            } else {
+                removeList.add(comp);
             }
         }
     }

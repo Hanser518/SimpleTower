@@ -9,6 +9,7 @@ import frame.pipeLine.GlobalParticleLine;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 import static common.Element.COMPONENT_LAYER;
 import static common.FrameConstant.UNIT_SIZE;
@@ -52,7 +53,7 @@ public class LandResist extends StanderInteractionComponent {
 
     @Override
     protected boolean isSearchingForInteraction() {
-        return true;
+        return interactionObjects.isEmpty() || interactionObjects.size() < 2;
     }
 
     @Override
@@ -78,36 +79,53 @@ public class LandResist extends StanderInteractionComponent {
         // 检测
         if (endurance < 0) {
             aliveState = false;
-            container.remove(this);
             GlobalInteractionLine.addToRemoveTower(this);
+            container.remove(this);
             GlobalParticleLine.registerBrokenParticle(container, this, 10);
         }
+        // 若可交互对象不为空
         if (!interactionObjects.isEmpty()) {
-            for (StanderInteractionComponent comp : interactionObjects) {
-                // 判断状态
-                if (comp.isAliveState()) {
+            ArrayList<StanderInteractionComponent> removeList = new ArrayList<>();
+            interactionEvent(removeList);
+            removeList.forEach(interactionObjects::remove);
+        }
+    }
+
+    private void interactionEvent(ArrayList<StanderInteractionComponent> removeList){
+        for (StanderInteractionComponent comp : interactionObjects) {
+            // 判断状态
+            if (comp.isAliveState()) {
+                // 计算锁定范围
+                Point compLocation = comp.getLocationOnScreen();
+                int distance = calcDistance(this.getLocationOnScreen(), compLocation);
+                // 判断是否符合Resist状态施加条件
+                if (distance < UNIT_SIZE && interactionObjects.size() < 3){
                     Resist resist = new Resist(this, comp);
                     comp.addToStatus(resist);
-                    // 判断是否超出范围
-                    Point compLocation = comp.getLocationOnScreen();
-                    if (calcDistance(this.getLocationOnScreen(), compLocation) > atkRange * UNIT_SIZE) {
-                        interactionObjects.remove(comp);
-                    } else {
-                        if (atkLoad > atkInterval) {
-                            int targetValue = comp.getRestEndurance(atkValue - interactionObjects.size() + 1);
-                            GlobalParticleLine.registerBrokenParticle(Element.layerPanel, comp, 10);
-                            if (targetValue < 0) {
-                                interactionObjects.remove(comp);
-                            }
-                            atkLoad = 0;
-                        } else {
-                            atkLoad += 10;
-                        }
-                    }
                 } else {
-                    interactionObjects.remove(comp);
+                    removeList.add(this);
                 }
+                // 判断是否超出范围
+                if (distance > atkRange * UNIT_SIZE) {
+                    removeList.add(this);
+                } else {
+                    // 符合输出条件
+                    if (atkLoad > atkInterval) {
+                        int targetValue = comp.getRestEndurance(atkValue - interactionObjects.size() + 1);
+                        GlobalParticleLine.registerBrokenParticle(Element.layerPanel, comp, 10);
+                        if (targetValue < 0) {
+                            removeList.add(this);
+                        }
+                        atkLoad = 0;
+                    } else {
+                        atkLoad += 10;
+                    }
+                }
+            } else {
+                removeList.add(this);
             }
         }
     }
+
+
 }

@@ -6,9 +6,9 @@ public interface FrameConstant {
 
     Double FULL_SCREEN = 1.0;
 
-    Double HALF_SCREEN = 0.4;
+    Double HALF_SCREEN = 0.7;
 
-    Integer UNIT_SIZE = 35;
+    Integer UNIT_SIZE = 60;
 
     Font MAIN_FONT = new Font("Microsoft YaHei", Font.BOLD, 15);
 

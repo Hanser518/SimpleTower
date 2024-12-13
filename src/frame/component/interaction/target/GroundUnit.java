@@ -94,6 +94,8 @@ public class GroundUnit extends StanderInteractionComponent {
     protected void triggerInteractionEvent() {
         if (working) {
             motion();
+        }
+        if (!interactionObjects.isEmpty()) {
             atk();
         }
         // 检测
@@ -136,33 +138,33 @@ public class GroundUnit extends StanderInteractionComponent {
     }
 
     private void atk() {
-        if (!interactionObjects.isEmpty()) {
-            for (StanderInteractionComponent comp : interactionObjects) {
-                // 判断状态
-                if (comp.isAliveState()) {
-                    // 判断是否超出范围
-                    Point compLocation = comp.getLocationOnScreen();
-                    if (calcDistance(this.getLocationOnScreen(), compLocation) > atkRange * UNIT_SIZE) {
-                        System.out.println(calcDistance(this.getCompLocation(), compLocation));
-                        interactionObjects.remove(comp);
-                    } else {
-                        if (atkLoad > atkInterval) {
-                            int targetValue = comp.getRestEndurance(atkValue - interactionObjects.size() + 1);
-                            Point towerLocation = getLocation();
-                            Point targetLocation = comp.getLocation();
-                            GlobalParticleLine.registerLineParticle(Element.layerPanel, towerLocation, targetLocation, 10);
-                            if (targetValue < 0) {
-                                interactionObjects.remove(comp);
-                            }
-                            atkLoad = 0;
-                        } else {
-                            atkLoad += 10;
-                        }
-                    }
+        List<StanderInteractionComponent> removeList = new ArrayList<>();
+        for (StanderInteractionComponent comp : interactionObjects) {
+            // 判断状态
+            if (comp.isAliveState()) {
+                // 判断是否超出范围
+                Point compLocation = comp.getLocationOnScreen();
+                if (calcDistance(this.getLocationOnScreen(), compLocation) > atkRange * UNIT_SIZE) {
+                    // System.out.println(calcDistance(this.getCompLocation(), compLocation));
+                    removeList.add(comp);
                 } else {
-                    interactionObjects.remove(comp);
+                    if (atkLoad > atkInterval) {
+                        int targetValue = comp.getRestEndurance(atkValue - interactionObjects.size() + 1);
+                        Point towerLocation = getLocation();
+                        Point targetLocation = comp.getLocation();
+                        GlobalParticleLine.registerLineParticle(Element.layerPanel, towerLocation, targetLocation, 10);
+                        if (targetValue < 0) {
+                            removeList.add(comp);
+                        }
+                        atkLoad = 0;
+                    } else {
+                        atkLoad += 10;
+                    }
                 }
+            } else {
+                removeList.add(comp);
             }
         }
+        removeList.forEach(interactionObjects::remove);
     }
 }

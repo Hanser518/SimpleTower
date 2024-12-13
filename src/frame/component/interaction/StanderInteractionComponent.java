@@ -153,20 +153,22 @@ public abstract class StanderInteractionComponent extends JPanel {
      * 触发交互事件
      */
     public void interaction() {
-        // 标准状态处理
-        for (StanderStatusComponent status : statusList) {
-            status.invoke();
+        if (aliveState) {
+            // 标准状态处理
+            for (StanderStatusComponent status : statusList) {
+                status.invoke();
+            }
+            // 交互对象处理
+            if (isSearchingForInteraction()) {
+                searchInteraction();
+            }
+            // 触发交互事件
+            triggerInteractionEvent();
         }
-        // 交互对象处理
-        if (isSearchingForInteraction()) {
-            searchInteraction();
-        }
-        // 触发交互事件
-        triggerInteractionEvent();
     }
 
-    public void addToStatus(StanderStatusComponent SSC){
-        if (!statusClassList.contains(SSC.getClass())){
+    public void addToStatus(StanderStatusComponent SSC) {
+        if (!statusClassList.contains(SSC.getClass())) {
             statusList.add(SSC);
             statusClassList.add(SSC.getClass());
         }
@@ -180,12 +182,12 @@ public abstract class StanderInteractionComponent extends JPanel {
         return aliveState;
     }
 
-    public int getRestEndurance(int value){
+    public int getRestEndurance(int value) {
         endurance -= value;
         return endurance;
     }
 
-    public void setWorking(){
+    public void setWorking() {
         working = false;
     }
 
