@@ -1,12 +1,13 @@
 package frame.component.interaction.target;
 
+import common.Element;
 import entity.Direction;
 import frame.component.interaction.StanderInteractionComponent;
 import frame.pipeLine.GlobalInteractionLine;
+import frame.pipeLine.GlobalParticleLine;
 import method.way.BuildSolution;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import static common.Constant.UNIT_MOVE_COUNT;
 import static common.Element.COMPONENT_LAYER;
 import static common.FrameConstant.UNIT_SIZE;
 
-public class GroundUnitBaseStander extends StanderInteractionComponent {
+public class GroundUnit extends StanderInteractionComponent {
 
     /**
      * 每单位移动量
@@ -34,8 +35,11 @@ public class GroundUnitBaseStander extends StanderInteractionComponent {
      */
     private List<Direction> motionPath = new ArrayList<>();
 
-    public GroundUnitBaseStander() {
+    public GroundUnit() {
         super();
+        atkRange = 1;
+        atkValue = 2;
+        atkLoad = atkInterval - 1;
         setBackground(new Color(34, 34, 34, 0));
 
     }
@@ -49,9 +53,9 @@ public class GroundUnitBaseStander extends StanderInteractionComponent {
         int frameMotionValue = UNIT_SIZE / UNIT_MOVE_COUNT;
         Arrays.fill(motionValues, frameMotionValue);
         int interval = UNIT_SIZE - frameMotionValue * UNIT_MOVE_COUNT;
-        if (interval > 0){
+        if (interval > 0) {
             int split = UNIT_MOVE_COUNT / interval;
-            for(int i = 1;i < UNIT_MOVE_COUNT;i += split){
+            for (int i = 1; i < UNIT_MOVE_COUNT; i += split) {
                 motionValues[i] += 1;
             }
         }
@@ -88,6 +92,20 @@ public class GroundUnitBaseStander extends StanderInteractionComponent {
 
     @Override
     protected void triggerInteractionEvent() {
+        if (working) {
+            motion();
+            atk();
+        }
+        // 检测
+        if (endurance < 0) {
+            aliveState = false;
+            container.remove(this);
+            GlobalInteractionLine.addToRemoveTarget(this);
+            GlobalParticleLine.registerBrokenParticle(container, this, 10);
+        }
+    }
+
+    private void motion() {
         // 获取当前坐标
         Point location = getLocation();
         // 获取移动方向
@@ -115,10 +133,36 @@ public class GroundUnitBaseStander extends StanderInteractionComponent {
                 this.compLocation = motionPath.get(index + 1);
             }
         }
-        if (endurance < 0) {
-            aliveState = false;
-            container.remove(this);
-            GlobalInteractionLine.addToRemoveTarget(this);
+    }
+
+    private void atk() {
+        if (!interactionObjects.isEmpty()) {
+            for (StanderInteractionComponent comp : interactionObjects) {
+                // 判断状态
+                if (comp.isAliveState()) {
+                    // 判断是否超出范围
+                    Point compLocation = comp.getLocationOnScreen();
+                    if (calcDistance(this.getLocationOnScreen(), compLocation) > atkRange * UNIT_SIZE) {
+                        System.out.println(calcDistance(this.getCompLocation(), compLocation));
+                        interactionObjects.remove(comp);
+                    } else {
+                        if (atkLoad > atkInterval) {
+                            int targetValue = comp.getRestEndurance(atkValue - interactionObjects.size() + 1);
+                            Point towerLocation = getLocation();
+                            Point targetLocation = comp.getLocation();
+                            GlobalParticleLine.registerLineParticle(Element.layerPanel, towerLocation, targetLocation, 10);
+                            if (targetValue < 0) {
+                                interactionObjects.remove(comp);
+                            }
+                            atkLoad = 0;
+                        } else {
+                            atkLoad += 10;
+                        }
+                    }
+                } else {
+                    interactionObjects.remove(comp);
+                }
+            }
         }
     }
 }

@@ -5,9 +5,10 @@ import common.Element;
 import frame.FrameBase;
 import frame.component.scene.RoadComponent;
 import frame.component.scene.WallComponent;
-import frame.component.interaction.tower.LandComponent;
-import frame.component.interaction.tower.LightningComponent;
+import frame.component.interaction.discard.LandComponent;
+import frame.component.interaction.discard.LightningComponent;
 import frame.pipeLine.GlobalIncidentLine;
+import frame.pipeLine.GlobalInteractionLine;
 import frame.pipeLine.GlobalParticleLine;
 
 import javax.swing.*;
@@ -17,6 +18,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,6 +99,7 @@ public class CandidateComponent extends JPanel implements StanderIncidentCompone
                     initialClick = e.getPoint(); // 记录初始点击位置
                     GlobalIncidentLine.pauseTimer();
                     GlobalParticleLine.pauseTimer();
+                    GlobalInteractionLine.pauseTimer();
                     // Constant.FRAME_REFRESH_INTERVAL *= 3;
                 }
             }
@@ -106,6 +110,7 @@ public class CandidateComponent extends JPanel implements StanderIncidentCompone
                     registerTower(component);
                     GlobalIncidentLine.continueTimer();
                     GlobalParticleLine.continueTimer();
+                    GlobalInteractionLine.continueTimer();
                     //  Constant.FRAME_REFRESH_INTERVAL /= 3;
                     isChange = true;
                 }
@@ -144,21 +149,35 @@ public class CandidateComponent extends JPanel implements StanderIncidentCompone
             if (panelMatrix[compLocation.x][compLocation.y] != null) {
                 if (panelMatrix[compLocation.x][compLocation.y] instanceof WallComponent wc){
                     if (wc.isDeploymentEnabled(component)){
-                        LightningComponent TC = new LightningComponent();
-                        TC.setBounds(compLocation.x * UNIT_SIZE, compLocation.y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-                        TC.register(layerPanel, new Point(compLocation.x, compLocation.y), wc);
-                        layerPanel.add(TC, COMPONENT_LAYER);
-                        componentList.remove(component);
-                        layerPanel.remove(component);
+                        Class<?> compClass = component.getClass();
+                        try {
+                            Constructor<?> constructor = compClass.getConstructor();
+                            Method setLocation = compClass.getMethod("setLocation", Point.class, JPanel.class);
+                            Method register = compClass.getMethod("register", JLayeredPane.class);
+                            Object item = constructor.newInstance();
+                            setLocation.invoke(item, compLocation, panelMatrix[compLocation.x][compLocation.y]);
+                            register.invoke(item, layerPanel);
+                            componentList.remove(component);
+                            layerPanel.remove(component);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 } else if (panelMatrix[compLocation.x][compLocation.y] instanceof RoadComponent rc){
                     if (rc.isDeploymentEnabled(component)){
-                        LandComponent LC = new LandComponent();
-                        LC.setBounds(compLocation.x * UNIT_SIZE, compLocation.y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-                        LC.register(layerPanel, new Point(compLocation.x, compLocation.y), rc);
-                        layerPanel.add(LC, COMPONENT_LAYER);
-                        componentList.remove(component);
-                        layerPanel.remove(component);
+                        Class<?> compClass = component.getClass();
+                        try {
+                            Constructor<?> constructor = compClass.getConstructor();
+                            Method setLocation = compClass.getMethod("setLocation", Point.class, JPanel.class);
+                            Method register = compClass.getMethod("register", JLayeredPane.class);
+                            Object item = constructor.newInstance();
+                            setLocation.invoke(item, compLocation, panelMatrix[compLocation.x][compLocation.y]);
+                            register.invoke(item, layerPanel);
+                            componentList.remove(component);
+                            layerPanel.remove(component);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
             }

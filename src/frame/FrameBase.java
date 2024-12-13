@@ -4,8 +4,8 @@ import common.Element;
 import frame.annotation.InitMethod;
 import frame.component.incident.CandidateComponent;
 import frame.component.interaction.StanderInteractionComponent;
-import frame.component.interaction.tower.LandComponent;
-import frame.component.interaction.tower.LightningComponent;
+import frame.component.interaction.tower.LandResist;
+import frame.component.interaction.tower.Lightning;
 import frame.pipeLine.GlobalInteractionLine;
 import frame.pipeLine.GlobalParticleLine;
 import frame.component.incident.SceneComponent;
@@ -141,16 +141,16 @@ public class FrameBase extends JFrame implements ActionListener {
             repaint();
         });
 
-        List<JPanel> compList = new ArrayList<>();
-        compList.add(new LightningComponent());
-        compList.add(new LandComponent());
+        List<StanderInteractionComponent> compList = new ArrayList<>();
+        compList.add(new Lightning());
+        compList.add(new LandResist());
 
         // 将组件添加到面板中
         operationPanel.add(editButton);
         initShopButton(compList);
     }
 
-    private void initShopButton(List<JPanel> compList) {
+    private void initShopButton(List<StanderInteractionComponent> compList) {
         for (JPanel comp : compList) {
             try {
                 Class<?> compClass = comp.getClass();
@@ -161,7 +161,7 @@ public class FrameBase extends JFrame implements ActionListener {
                 JButton addButton = new JButton("BUY " + compName);
                 addButton.addActionListener(ac -> {
                     try {
-                        JPanel compPanel = (JPanel) compConstructor.newInstance();
+                        StanderInteractionComponent compPanel = (StanderInteractionComponent) compConstructor.newInstance();
                         if (CandidateComponent.getCompPoint() >= (int) getCost.invoke(compPanel)) {
                             CandidateComponent.addToComponent(compPanel);
                             CandidateComponent.deleteCompPoint((int) getCost.invoke(compPanel));

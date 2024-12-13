@@ -1,8 +1,7 @@
 package frame.component.incident;
 
 import common.Element;
-import frame.component.interaction.target.GroundUnitBaseStander;
-import frame.component.interaction.target.TargetComponent;
+import frame.component.interaction.target.GroundUnit;
 import frame.pipeLine.GlobalIncidentLine;
 
 import javax.swing.*;
@@ -10,7 +9,6 @@ import javax.swing.border.Border;
 import java.awt.*;
 
 import static common.Constant.UNIT_MOVE_COUNT;
-import static common.Element.COMPONENT_LAYER;
 import static common.Element.layerPanel;
 import static common.FrameConstant.UNIT_SIZE;
 
@@ -77,13 +75,12 @@ public class PointComponent extends JPanel implements StanderIncidentComponent {
             count++;
         else {
             if (sp != null && ep != null) {
-                TargetComponent TC = new TargetComponent();
-                TC.setBounds(sp.x * UNIT_SIZE, sp.y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-                TC.setBackground(new Color(147, 44, 44, 255));
-                TC.register(layerPanel, sp, ep);
-                layerPanel.add(TC, COMPONENT_LAYER);
-
-                GroundUnitBaseStander GB = new GroundUnitBaseStander();
+//                TargetComponent TC = new TargetComponent();
+//                TC.setBounds(sp.x * UNIT_SIZE, sp.y * UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
+//                TC.setBackground(new Color(147, 44, 44, 255));
+//                TC.register(layerPanel, sp, ep);
+//                layerPanel.add(TC, COMPONENT_LAYER);
+                GroundUnit GB = new GroundUnit();
                 GB.setPath(sp, ep);
                 GB.setLocation(sp.x * UNIT_SIZE, sp.y * UNIT_SIZE);
                 GB.register(layerPanel);

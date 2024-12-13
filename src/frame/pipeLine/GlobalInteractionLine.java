@@ -141,4 +141,12 @@ public class GlobalInteractionLine {
     public static void addToRemoveTarget(StanderInteractionComponent component) {
         removeTarget.add(component);
     }
+
+    public static void pauseTimer() {
+        GLOBAL_TIMER.stop();
+    }
+
+    public static void continueTimer() {
+        GLOBAL_TIMER.start();
+    }
 }

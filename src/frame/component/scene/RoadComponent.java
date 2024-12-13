@@ -1,6 +1,6 @@
 package frame.component.scene;
 
-import frame.component.interaction.tower.LandComponent;
+import frame.component.interaction.tower.LandResist;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -33,7 +33,7 @@ public class RoadComponent extends JPanel {
     }
 
     public boolean isDeploymentEnabled(JPanel component) {
-        if (component instanceof LandComponent) {
+        if (component instanceof LandResist) {
             if (type == null) {
                 return true;
             } else {

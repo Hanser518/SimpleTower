@@ -1,10 +1,9 @@
 package frame.component.incident;
 
 import common.Element;
-import frame.component.interaction.tower.LightningBaseStander;
 import frame.component.scene.RoadComponent;
 import frame.component.scene.WallComponent;
-import frame.component.interaction.target.TargetComponent;
+import frame.component.interaction.discard.TargetComponent;
 import frame.pipeLine.GlobalIncidentLine;
 import frame.pipeLine.GlobalParticleLine;
 import method.map.BuildMap;
@@ -112,10 +111,9 @@ public class SceneComponent extends JPanel implements StanderIncidentComponent {
                         }
                     }
                 } else if (SwingUtilities.isLeftMouseButton(e)) {
-                    LightningBaseStander LBS = new LightningBaseStander();
-                    LBS.setLocation(new Point(x, y), panel);
-                    LBS.register(layerPanel);
-                    LBS.setLocation(x * UNIT_SIZE, y * UNIT_SIZE);
+//                    Lightning LBS = new Lightning();
+//                    LBS.setLocation(new Point(x, y), panel);
+//                    LBS.register(layerPanel);
                     GlobalParticleLine.registerBrokenParticle(layerPanel, panel, panel.getWidth());
                 }
             }

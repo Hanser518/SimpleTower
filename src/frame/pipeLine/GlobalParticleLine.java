@@ -205,6 +205,9 @@ public class GlobalParticleLine extends JPanel {
         if (scheduleValue > liveCycle) {
             removeComponents.add(this);
         }
+        if (this.getWidth() < 2 && this.getHeight() < 2){
+            removeComponents.add(this);
+        }
     }
 
     public static void pauseTimer() {

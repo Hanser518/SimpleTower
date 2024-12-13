@@ -1,4 +1,4 @@
-package frame.component.interaction.target;
+package frame.component.interaction.discard;
 
 import entity.Direction;
 import frame.component.incident.StanderIncidentComponent;

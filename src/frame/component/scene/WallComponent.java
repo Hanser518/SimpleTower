@@ -1,6 +1,6 @@
 package frame.component.scene;
 
-import frame.component.interaction.tower.LightningComponent;
+import frame.component.interaction.tower.Lightning;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -54,7 +54,7 @@ public class WallComponent extends JPanel {
     }
 
     public boolean isDeploymentEnabled(JPanel component) {
-        if (component instanceof LightningComponent) {
+        if (component instanceof Lightning) {
             if (type == null) {
                 return true;
             } else {

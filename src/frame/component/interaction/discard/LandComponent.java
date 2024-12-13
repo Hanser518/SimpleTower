@@ -1,9 +1,8 @@
-package frame.component.interaction.tower;
+package frame.component.interaction.discard;
 
 import common.Element;
 import entity.Direction;
 import frame.component.incident.StanderIncidentComponent;
-import frame.component.interaction.target.TargetComponent;
 import frame.pipeLine.GlobalIncidentLine;
 import frame.pipeLine.GlobalParticleLine;
 

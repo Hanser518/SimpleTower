@@ -42,6 +42,8 @@ public abstract class StanderInteractionComponent extends JPanel {
      */
     protected final List<StanderStatusComponent> statusList = new ArrayList<>();
 
+    protected final List<Class<? extends StanderStatusComponent>> statusClassList = new ArrayList<>();
+
     /**
      * 耐久上限
      */
@@ -65,7 +67,7 @@ public abstract class StanderInteractionComponent extends JPanel {
     /**
      * atk interval
      */
-    protected Integer atkInterval = 10;
+    protected Integer atkInterval = 100;
 
     /**
      * atk range
@@ -76,6 +78,11 @@ public abstract class StanderInteractionComponent extends JPanel {
      * state
      */
     protected boolean aliveState = true;
+
+    /**
+     * working?
+     */
+    protected boolean working = true;
 
     /**
      * 初始化方法<br>
@@ -93,14 +100,17 @@ public abstract class StanderInteractionComponent extends JPanel {
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+                g2d.setColor(new Color(175, 175, 175));
+                g2d.fillRoundRect(0, 0, width, height, width / 2, height / 2);
+
                 g2d.setColor(new Color(111, 67, 67));
-                int enduranceWidth = (int) ((width - 3) * ((double) endurance / enduranceLimit));
+                int enduranceWidth = (int) ((width - 1) * ((double) endurance / enduranceLimit));
                 g2d.fillRect(1, 1, enduranceWidth, 5);
 
                 g2d.setColor(new Color(57, 29, 37));
-                g2d.drawRoundRect(0, 0, width, height, width / 2, height / 2);
                 g2d.drawOval(width / 8, height / 8, width - width / 8 * 2, height - height / 8 * 2);
                 g2d.drawOval(width / 8 * 2, height / 8 * 2, width - width / 8 * 4, height - height / 8 * 4);
+                g2d.drawString(String.valueOf(interactionObjects.size()), width / 2 - 3, height / 2 + 5);
             }
 
             @Override
@@ -155,6 +165,13 @@ public abstract class StanderInteractionComponent extends JPanel {
         triggerInteractionEvent();
     }
 
+    public void addToStatus(StanderStatusComponent SSC){
+        if (!statusClassList.contains(SSC.getClass())){
+            statusList.add(SSC);
+            statusClassList.add(SSC.getClass());
+        }
+    }
+
     protected int calcDistance(Point p1, Point p2) {
         return (int) Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
     }
@@ -166,6 +183,14 @@ public abstract class StanderInteractionComponent extends JPanel {
     public int getRestEndurance(int value){
         endurance -= value;
         return endurance;
+    }
+
+    public void setWorking(){
+        working = false;
+    }
+
+    public void resetWorking() {
+        working = true;
     }
 
     /**
