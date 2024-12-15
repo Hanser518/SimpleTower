@@ -24,4 +24,12 @@ public class Direction extends Point {
     public Direction(){
         direction = -1;
     }
+
+    public boolean equal(Direction other){
+        return other.direction == this.direction && other.x == this.x && other.y == this.y;
+    }
+
+    public boolean like(Direction other){
+        return other.x == this.x && other.y == this.y;
+    }
 }
