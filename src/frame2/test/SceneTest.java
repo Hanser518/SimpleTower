@@ -1,7 +1,7 @@
 package frame2.test;
 
-import frame2.component.scene.FloorComponent;
-import frame2.component.scene.PlatformComponent;
+import frame2.component.scene.FloorScene;
+import frame2.component.scene.PlatformScene;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,11 +23,11 @@ public class SceneTest {
         for(int i = 0;i < 10;i ++){
             for(int j = 0;j < 10;j ++){
                 if (i % 2 == 1 || j % 2 == 1){
-                    PlatformComponent p1 = new PlatformComponent();
+                    PlatformScene p1 = new PlatformScene();
                     p1.setLocation(i * UNIT_WIDTH, j * UNIT_HEIGHT);
                     panel.add(p1);
                 } else {
-                    FloorComponent f1 = new FloorComponent();
+                    FloorScene f1 = new FloorScene();
                     f1.setLocation(i * UNIT_WIDTH, j * UNIT_HEIGHT);
                     panel.add(f1);
                 }

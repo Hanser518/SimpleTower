@@ -1,11 +1,16 @@
 package frame2.component.scene;
 
-import common.Element;
+import entity.Direction;
 import frame2.component.SceneComponent;
+import frame2.component.effect.ParticleBrokenEffect;
+import frame2.component.tower.LightningTower;
 import method.map.BuildMap;
 import method.map.TransMap;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import static frame2.common.ComponentConstant.UNIT_HEIGHT;
 import static frame2.common.ComponentConstant.UNIT_WIDTH;
@@ -14,7 +19,7 @@ import static frame2.common.FrameConstant.MAIN_LAYER;
 /**
  * 地图容器类，无需注册到执行线程中
  */
-public class StageComponent extends SceneComponent {
+public class StageScene extends SceneComponent {
 
     /**
      * 场景宽高
@@ -33,7 +38,7 @@ public class StageComponent extends SceneComponent {
      */
     protected SceneComponent[][] panelMatrix;
 
-    public StageComponent(int width, int height) {
+    public StageScene(int width, int height) {
         super();
         // 初始化矩阵
         initMatrix(width, height);
@@ -53,7 +58,7 @@ public class StageComponent extends SceneComponent {
     /**
      * 根据输入宽高获取相应矩阵
      */
-    private void initMatrix(int width, int height){
+    private void initMatrix(int width, int height) {
         sceneMatrix = BuildMap.getMap(width, height);
         sceneMatrix = TransMap.getTransMatrix(sceneMatrix);
         sceneWidth = sceneMatrix.length;
@@ -74,19 +79,38 @@ public class StageComponent extends SceneComponent {
                         sceneMatrix[i][j] = 0;
                     }
                 }
-                if (sceneMatrix[i][j] == 1){
-                    panelMatrix[i][j] = new PlatformComponent();
+                if (sceneMatrix[i][j] == 1) {
+                    panelMatrix[i][j] = new PlatformScene();
                 } else {
-                    panelMatrix[i][j] = new FloorComponent();
+                    panelMatrix[i][j] = new FloorScene();
                 }
+                addTouchAction(panelMatrix[i][j], i, j);
                 panelMatrix[i][j].setLocation(i * UNIT_WIDTH, j * UNIT_HEIGHT);
                 panelMatrix[i][j].register(MAIN_LAYER);
             }
         }
     }
+    /**
+     * 添加点击事件
+     */
+    private void addTouchAction(SceneComponent comp, int i, int j) {
+        comp.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    ParticleBrokenEffect PBE = new ParticleBrokenEffect(comp);
+                    PBE.register(MAIN_LAYER);
+
+                    LightningTower LT = new LightningTower();
+                    LT.register(MAIN_LAYER, new Direction(i, j, 1));
+                }
+            }
+        });
+    }
 
     /**
      * 获取组件宽度
+     *
      * @return
      */
     public int getScreenWidth() {
@@ -95,6 +119,7 @@ public class StageComponent extends SceneComponent {
 
     /**
      * 获取组件高度
+     *
      * @return
      */
     public int getSceneHeight() {
@@ -103,17 +128,19 @@ public class StageComponent extends SceneComponent {
 
     /**
      * 获取数据矩阵
+     *
      * @return
      */
-    public int[][] getSceneMatrix(){
+    public int[][] getSceneMatrix() {
         return sceneMatrix;
     }
 
     /**
      * 获取panel矩阵
+     *
      * @return
      */
-    public SceneComponent[][] getPanelMatrix(){
+    public SceneComponent[][] getPanelMatrix() {
         return panelMatrix;
     }
 }

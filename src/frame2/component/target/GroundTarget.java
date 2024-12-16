@@ -11,7 +11,6 @@ public class GroundTarget extends TargetComponent {
     public GroundTarget() {
         super();
         setBackground(new Color(114, 57, 63, 0));
-        setBounds(0, 0, UNIT_WIDTH, UNIT_WIDTH);
     }
 
     @Override

@@ -1,9 +1,17 @@
 package frame2.pipeLine;
 
+import entity.Direction;
+import frame2.component.TargetComponent;
+import frame2.component.TowerComponent;
+
 import javax.swing.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static frame2.common.LineConstant.FRAME_UPDATE_FREQUENCY;
 
@@ -26,17 +34,19 @@ public class TargetLine {
     /**
      * 设置组件列表
      */
-    public static volatile ArrayList<JPanel> components = new ArrayList<>();
+    public static volatile ArrayList<TargetComponent> components = new ArrayList<>();
 
     /**
      * 待载入组件列表
      */
-    public static volatile ArrayList<JPanel> prepareComponents = new ArrayList<>();
+    public static volatile ArrayList<TargetComponent> prepareComponents = new ArrayList<>();
 
     /**
      * 待移除组件列表
      */
-    public static volatile ArrayList<JPanel> removeComponents = new ArrayList<>();
+    public static volatile ArrayList<TargetComponent> removeComponents = new ArrayList<>();
+
+    public static volatile Map<Direction, TargetComponent> componentsMap = new HashMap<>();
 
     public static void initializeGlobalTimer() {
         if (GLOBAL_TIMER == null) {
@@ -74,17 +84,19 @@ public class TargetLine {
         components.addAll(prepareComponents);
         removeComponents.clear();
         prepareComponents.clear();
+        componentsMap = components.stream()
+                .collect(Collectors.toMap(TargetComponent::getCompDirection, Function.identity(), (item1, item2) -> item1));
     }
 
-    public static void addToPrepareComponents(JPanel component) {
+    public static void addToPrepareComponents(TargetComponent component) {
         prepareComponents.add(component);
     }
 
-    public static void addToRemoveComponents(JPanel component) {
+    public static void addToRemoveComponents(TargetComponent component) {
         removeComponents.add(component);
     }
 
-    public static List<JPanel> getComponents() {
+    public static List<TargetComponent> getComponents() {
         return components;
     }
 
@@ -94,5 +106,9 @@ public class TargetLine {
 
     public static void pauseTimer() {
         GLOBAL_TIMER.stop();
+    }
+
+    public static Map<Direction, TargetComponent> getTowerComponentMap() {
+        return componentsMap;
     }
 }

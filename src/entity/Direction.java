@@ -16,20 +16,23 @@ public class Direction extends Point {
         direction = dir;
     }
 
-    public Direction(Point p){
+    public Direction(Point p) {
         super(p);
         direction = -1;
     }
 
-    public Direction(){
+    public Direction() {
         direction = -1;
     }
 
-    public boolean equal(Direction other){
-        return other.direction == this.direction && other.x == this.x && other.y == this.y;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Direction other)
+            return other.x == this.x && other.y == this.y;
+        return false;
     }
 
-    public boolean like(Direction other){
-        return other.x == this.x && other.y == this.y;
+    public boolean fullEquals(Direction other) {
+        return other.direction == this.direction && other.x == this.x && other.y == this.y;
     }
 }

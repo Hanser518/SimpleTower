@@ -1,12 +1,11 @@
 package frame2.component;
 
 import entity.Direction;
-import frame.pipeLine.GlobalInteractionLine;
 import frame2.pipeLine.TargetLine;
-import frame2.pipeLine.TowerLine;
 import method.way.BuildSolution;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,7 +85,7 @@ public abstract class TargetComponent extends JPanel {
     /**
      * state
      */
-    protected boolean aliveState = true;
+    protected boolean alive = true;
 
     /**
      * 组件容器
@@ -101,9 +100,32 @@ public abstract class TargetComponent extends JPanel {
     /**
      * 初始化
      */
+    @SuppressWarnings("SuspiciousNameCombination")
     public TargetComponent() {
         super(null);
         setBackground(Color.WHITE);
+        setBounds(0, 0, UNIT_WIDTH, UNIT_WIDTH);
+        setBorder(new Border() {
+            @Override
+            public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+                g.setColor(new Color(245, 79, 88, 190));
+                int enduranceWidth = (int) ((width - 1) * 0.8 * (endurance / (double) enduranceLimit));
+                int enduranceHeight = height / 12 + 1;
+                g.fillRect((int) (width * 0.1), 0, enduranceWidth, enduranceHeight);
+                g.setColor(new Color(77, 29, 31, 190));
+                g.drawRect((int) (width * 0.1), 0, enduranceWidth, enduranceHeight);
+            }
+
+            @Override
+            public Insets getBorderInsets(Component c) {
+                return null;
+            }
+
+            @Override
+            public boolean isBorderOpaque() {
+                return false;
+            }
+        });
         initMoveValues();
     }
 
@@ -116,9 +138,9 @@ public abstract class TargetComponent extends JPanel {
         Arrays.fill(landscapeArr, xValue);
         int interval = UNIT_WIDTH - xValue * MOVE_COUNT;
         if (interval > 0) {
-            int split = MOVE_COUNT / interval;
-            for (int i = 1; i < MOVE_COUNT; i += split) {
-                landscapeArr[i] += 1;
+            double split = MOVE_COUNT / (double) interval;
+            for (int i = 0; i < interval; i++) {
+                landscapeArr[(int) (i * split)] += 1;
             }
         }
 
@@ -127,9 +149,9 @@ public abstract class TargetComponent extends JPanel {
         Arrays.fill(portraitArr, yValue);
         interval = UNIT_HEIGHT - yValue * MOVE_COUNT;
         if (interval > 0) {
-            int split = MOVE_COUNT / interval;
-            for (int i = 1; i < MOVE_COUNT; i += split) {
-                portraitArr[i] += 1;
+            double split = MOVE_COUNT / (double) interval;
+            for (int i = 0; i < interval; i++) {
+                portraitArr[(int) (i * split)] += 1;
             }
         }
     }
@@ -143,6 +165,7 @@ public abstract class TargetComponent extends JPanel {
     public void register(JLayeredPane container, List<Direction> path) {
         this.container = container;
         this.path = path;
+        compIndex = 0;
         compDirection = path.get(compIndex);
         setLocation(compDirection.x * UNIT_WIDTH, (compDirection.y + 1) * UNIT_HEIGHT - this.getHeight());
         container.add(this, COMPONENT_LAYER);
@@ -153,6 +176,11 @@ public abstract class TargetComponent extends JPanel {
      * 标准事件
      */
     public void incident() {
+        if (endurance <= 0){
+            TargetLine.addToRemoveComponents(this);
+            container.remove(this);
+            alive = false;
+        }
         if (motionState) {
             motionEvent();
         }
@@ -179,10 +207,10 @@ public abstract class TargetComponent extends JPanel {
         if (motionCount == MOVE_COUNT) {
             motionCount = 0;
             // 若路线未发生变化
-            if (compIndex <= path.size() - 1 && compDirection.equal(path.get(compIndex))) {
+            if (compIndex <= path.size() - 1 && compDirection.equals(path.get(compIndex))) {
                 if (compIndex == path.size() - 1) {
                     TargetLine.addToRemoveComponents(this);
-                    aliveState = false;
+                    container.remove(this);
                     return;
                 } else {
                     compIndex++;
@@ -206,6 +234,23 @@ public abstract class TargetComponent extends JPanel {
         return container;
     }
 
+    /**
+     *
+     */
+    public Direction getCompDirection(){
+        return compDirection;
+    }
+
+    public int getResidueEndurance(int atk){
+        endurance -= atk;
+        return endurance;
+    }
+
+    /**
+     * 设置组件外形
+     *
+     * @param g the <code>Graphics</code> object to protect
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -214,4 +259,7 @@ public abstract class TargetComponent extends JPanel {
 
     protected abstract void setContent(Graphics g, int width, int height);
 
+    public boolean isAlive() {
+        return alive;
+    }
 }

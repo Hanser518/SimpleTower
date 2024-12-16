@@ -12,7 +12,7 @@ public class FrameConstant {
     /**
      * 缩放系数
      */
-    public static Double SCREEN_RATE = 0.7;
+    public static Double SCREEN_RATE = 0.25;
 
     /**
      * 屏幕宽度

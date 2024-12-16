@@ -58,7 +58,7 @@ public class EffectLine {
                 Method componentMotion = component.getClass().getMethod("incident");
                 componentMotion.invoke(component);
             } catch (Exception e) {
-                System.out.println(COUNT + "_SCENE-ERROR: " + e.getMessage());
+                System.out.println(COUNT + "_EFFECT-ERROR: " + e);
             }
         }
         for (JPanel component : removeComponents) {
@@ -67,7 +67,7 @@ public class EffectLine {
                 JLayeredPane container = (JLayeredPane) getContainer.invoke(component);
                 container.remove(component);
             } catch (Exception e) {
-                System.out.println(COUNT + "_SCENE-ERROR: " + e.getMessage());
+                System.out.println(COUNT + "_EFFECT-ERROR: " + e);
             }
             components.remove(component);
         }

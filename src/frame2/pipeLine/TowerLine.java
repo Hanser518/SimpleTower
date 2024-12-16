@@ -55,19 +55,19 @@ public class TowerLine {
         // 统一更新所有组件的位置
         for (JPanel component : components) {
             try {
-                Method componentMotion = component.getClass().getDeclaredMethod("incident");
+                Method componentMotion = component.getClass().getMethod("incident");
                 componentMotion.invoke(component);
             } catch (Exception e) {
-                System.out.println(COUNT + "_SCENE-ERROR: " + e.getMessage());
+                System.out.println(COUNT + "_TOWER-ERROR: " + e);
             }
         }
         for (JPanel component : removeComponents) {
             try {
-                Method getContainer = component.getClass().getDeclaredMethod("getContainer");
+                Method getContainer = component.getClass().getMethod("getContainer");
                 JLayeredPane container = (JLayeredPane) getContainer.invoke(component);
                 container.remove(component);
             } catch (Exception e) {
-                System.out.println(COUNT + "_SCENE-ERROR: " + e.getMessage());
+                System.out.println(COUNT + "_TOWER-ERROR: " + e);
             }
             components.remove(component);
         }

@@ -1,7 +1,7 @@
 package frame2;
 
-import frame2.component.scene.RouteComponent;
-import frame2.component.scene.StageComponent;
+import frame2.component.scene.RouteScene;
+import frame2.component.scene.StageScene;
 import frame2.component.target.GroundTarget;
 import frame2.pipeLine.EffectLine;
 import frame2.pipeLine.SceneLine;
@@ -32,11 +32,11 @@ public class FrameBase2 {
                 (int) (SCREEN_HEIGHT * (1 - SCREEN_RATE) / 2),
                 FRAME_WIDTH, FRAME_HEIGHT);
         MAIN_FRAME.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        MAIN_FRAME.setLayout(new BorderLayout());
-//
-//        MAIN_FRAME.add(MAIN_LAYER, BorderLayout.CENTER);
-        MAIN_FRAME.setLayout(null);
-        MAIN_LAYER.setBounds(100, 100, 2000, 1000);
+        MAIN_FRAME.setLayout(new BorderLayout());
+        MAIN_FRAME.add(MAIN_LAYER, BorderLayout.CENTER);
+
+//        MAIN_FRAME.setLayout(null);
+//        MAIN_LAYER.setBounds(0, 0, 2000, 1000);
         MAIN_FRAME.add(MAIN_LAYER);
         EffectLine.initializeGlobalTimer();
         SceneLine.initializeGlobalTimer();
@@ -57,10 +57,18 @@ public class FrameBase2 {
     }
 
     private void example() {
-        StageComponent SC = new StageComponent(10, 7);
-        RouteComponent RC = new RouteComponent(SC.getSceneMatrix());
-        RC.addTarget(new GroundTarget(), null);
+        StageScene SC = new StageScene(10, 7);
+        RouteScene RC = new RouteScene(SC.getSceneMatrix());
+        for (int i = 0; i < 10; i++) {
+            RC.addTarget(new GroundTarget(), null);
+        }
         RC.register(MAIN_LAYER, new Point(SC.getSceneMatrix().length - 2, SC.getSceneMatrix()[0].length - 2), new Point(1, SC.getSceneMatrix()[0].length - 2));
+
+        RouteScene RC2 = new RouteScene(SC.getSceneMatrix());
+        for (int i = 0; i < 10; i++) {
+            RC2.addTarget(new GroundTarget(), null);
+        }
+        RC2.register(MAIN_LAYER, new Point(SC.getSceneMatrix().length - 2, 1), new Point(1, SC.getSceneMatrix()[0].length - 2));
 
     }
 

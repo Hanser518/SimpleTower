@@ -3,20 +3,27 @@ package frame2.component.scene;
 import entity.Direction;
 import frame2.component.SceneComponent;
 import frame2.component.TargetComponent;
+import frame2.component.TowerComponent;
+import frame2.component.effect.ParticleLightingEffect;
+import frame2.pipeLine.SceneLine;
+import frame2.pipeLine.TargetLine;
+import frame2.pipeLine.TowerLine;
 import method.way.BuildSolution;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 import static frame2.common.ComponentConstant.UNIT_HEIGHT;
 import static frame2.common.ComponentConstant.UNIT_WIDTH;
-import static frame2.common.FrameConstant.COMPONENT_LAYER;
+import static frame2.common.FrameConstant.MAIN_LAYER;
 import static frame2.common.FrameConstant.SCENE_LAYER;
 
-public class RouteComponent extends SceneComponent {
+public class RouteScene extends SceneComponent {
 
     /**
      * target list<br>
@@ -26,7 +33,7 @@ public class RouteComponent extends SceneComponent {
 
     /**
      * interval list<br>
-     * if interval list is null, 20 will be the default value
+     * if interval list is null, 30 will be the default value
      */
     private List<Integer> intervalList = new ArrayList<>();
 
@@ -45,7 +52,7 @@ public class RouteComponent extends SceneComponent {
      * loop<br>
      * the target will be registered in a cyclic list of intervals
      */
-    private boolean loop = false;
+    private boolean loop = true;
 
     /**
      * the start point of target
@@ -83,7 +90,7 @@ public class RouteComponent extends SceneComponent {
      *
      * @param sceneMatrix map data
      */
-    public RouteComponent(int[][] sceneMatrix) {
+    public RouteScene(int[][] sceneMatrix) {
         super();
         this.sceneMatrix = sceneMatrix;
     }
@@ -187,17 +194,19 @@ public class RouteComponent extends SceneComponent {
     @Override
     public void incident() {
         // 检测是否重置serial
-        if (loop && serial == intervalList.size()) {
+        if (loop && serial >= targetList.size()) {
             serial = 0;
         }
         // 获取间隔
-        if (serial < targetList.size()){
-            int interval = intervalList.isEmpty() ? 20 : intervalList.get(serial);
+        if (serial < targetList.size()) {
+            int interval = intervalList.isEmpty() ? 30 : intervalList.get(serial);
             if (scheduleValue >= interval) {
                 TargetComponent TC = targetList.get(serial);
-                TC.register(container, path);
+                if (!TargetLine.getComponents().contains(TC) && TC.isAlive()) {
+                    TC.register(container, path);
+                }
                 scheduleValue = 0;
-                serial ++;
+                serial++;
             } else {
                 scheduleValue++;
             }
@@ -208,4 +217,5 @@ public class RouteComponent extends SceneComponent {
     protected void setContent(Graphics g, int width, int height) {
         // g.fillOval(endPoint.x * UNIT_WIDTH, endPoint.y * UNIT_HEIGHT, UNIT_WIDTH, UNIT_HEIGHT);
     }
+
 }
