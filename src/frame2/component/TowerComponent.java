@@ -33,9 +33,14 @@ public abstract class TowerComponent extends JPanel {
     protected Integer atkValue = 5;
 
     /**
+     * atk schedule
+     */
+    protected Integer atkSchedule = 0;
+
+    /**
      * atk load
      */
-    protected Integer atkLoad = 0;
+    protected Integer atkLoad = 15;
 
     /**
      * atk interval
@@ -46,6 +51,11 @@ public abstract class TowerComponent extends JPanel {
      * atk range
      */
     protected Integer atkRange = 5;
+
+    /**
+     *
+     */
+    protected Integer resistCount = 1;
 
     /**
      * state
@@ -117,7 +127,7 @@ public abstract class TowerComponent extends JPanel {
     public void register(JLayeredPane container, Direction compLocation) {
         this.container = container;
         this.compLocation = compLocation;
-        setLocation(compLocation.x * UNIT_WIDTH, compLocation.y * UNIT_HEIGHT);
+        setLocation(compLocation.x * UNIT_WIDTH, (compLocation.y + 1) * UNIT_HEIGHT - this.getHeight());
         updateSelectRangeList();
         container.add(this, COMPONENT_LAYER);
         TowerLine.addToPrepareComponents(this);
@@ -254,6 +264,22 @@ public abstract class TowerComponent extends JPanel {
             default:
                 selectRange.add(compLocation);
         }
+    }
+
+    public Direction getCompLocation() {
+        return compLocation;
+    }
+
+    public Integer getResistCount(){
+        return resistCount;
+    }
+
+    public void updateResistCount(int value){
+        resistCount += value;
+    }
+
+    public boolean isAlive(){
+        return alive;
     }
 
 }

@@ -23,7 +23,7 @@ public class LightningTower extends TowerComponent {
 
     @Override
     protected void searchInteraction() {
-        Map<Direction, TargetComponent> map = TargetLine.getTowerComponentMap();
+        Map<Direction, TargetComponent> map = TargetLine.getTargetComponentMap();
         TargetComponent TC = null;
         int distance = 51800;
         for (Map.Entry<Direction, TargetComponent> me : map.entrySet()) {
@@ -42,8 +42,8 @@ public class LightningTower extends TowerComponent {
 
     @Override
     protected void triggerInteractionEvent() {
-        if (atkLoad.equals(atkInterval)){
-            atkLoad = 0;
+        if (atkSchedule >= atkInterval){
+            atkSchedule -= atkInterval;
             TargetComponent interact = interactorList.get(0);
             if (selectRange.contains(interact.getCompDirection())){
                 ParticleLightingEffect PLE = new ParticleLightingEffect(this, interact);
@@ -56,7 +56,7 @@ public class LightningTower extends TowerComponent {
                 interactorList.remove(interact);
             }
         }else {
-            atkLoad += 10;
+            atkSchedule += atkLoad;
         }
     }
 

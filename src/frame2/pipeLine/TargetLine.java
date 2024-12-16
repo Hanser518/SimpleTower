@@ -2,7 +2,6 @@ package frame2.pipeLine;
 
 import entity.Direction;
 import frame2.component.TargetComponent;
-import frame2.component.TowerComponent;
 
 import javax.swing.*;
 import java.lang.reflect.Method;
@@ -46,6 +45,9 @@ public class TargetLine {
      */
     public static volatile ArrayList<TargetComponent> removeComponents = new ArrayList<>();
 
+    /**
+     * 组件位图
+     */
     public static volatile Map<Direction, TargetComponent> componentsMap = new HashMap<>();
 
     public static void initializeGlobalTimer() {
@@ -108,7 +110,7 @@ public class TargetLine {
         GLOBAL_TIMER.stop();
     }
 
-    public static Map<Direction, TargetComponent> getTowerComponentMap() {
+    public static Map<Direction, TargetComponent> getTargetComponentMap() {
         return componentsMap;
     }
 }

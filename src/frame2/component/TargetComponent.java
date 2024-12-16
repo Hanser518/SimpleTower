@@ -1,7 +1,9 @@
 package frame2.component;
 
 import entity.Direction;
+import frame2.component.effect.ResistEffect;
 import frame2.pipeLine.TargetLine;
+import frame2.pipeLine.TowerLine;
 import method.way.BuildSolution;
 
 import javax.swing.*;
@@ -10,6 +12,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static frame2.common.ComponentConstant.*;
 import static frame2.common.FrameConstant.COMPONENT_LAYER;
@@ -81,6 +84,8 @@ public abstract class TargetComponent extends JPanel {
      * atk range
      */
     protected Integer atkRange = 5;
+
+    protected Integer resistCount = 1;
 
     /**
      * state
@@ -176,9 +181,8 @@ public abstract class TargetComponent extends JPanel {
      * 标准事件
      */
     public void incident() {
-        if (endurance <= 0){
+        if (endurance <= 0) {
             TargetLine.addToRemoveComponents(this);
-            container.remove(this);
             alive = false;
         }
         if (motionState) {
@@ -187,6 +191,8 @@ public abstract class TargetComponent extends JPanel {
     }
 
     protected void motionEvent() {
+        // 检查阻挡情况
+        checkResist();
         // 获取当前坐标
         Point location = getLocation();
         // 获取移动方向
@@ -210,7 +216,6 @@ public abstract class TargetComponent extends JPanel {
             if (compIndex <= path.size() - 1 && compDirection.equals(path.get(compIndex))) {
                 if (compIndex == path.size() - 1) {
                     TargetLine.addToRemoveComponents(this);
-                    container.remove(this);
                     return;
                 } else {
                     compIndex++;
@@ -219,6 +224,17 @@ public abstract class TargetComponent extends JPanel {
             } else {
                 updatePath();
             }
+        }
+    }
+
+    protected void checkResist() {
+        Map<Direction, TowerComponent> towerMap = TowerLine.getTowerComponentMap();
+        if (towerMap.containsKey(compDirection)) {
+            TowerComponent tc = towerMap.get(compDirection);
+            ResistEffect RE = new ResistEffect(this, tc);
+            RE.register(getContainer());
+        } else {
+            motionState = true;
         }
     }
 
@@ -237,11 +253,11 @@ public abstract class TargetComponent extends JPanel {
     /**
      *
      */
-    public Direction getCompDirection(){
+    public Direction getCompDirection() {
         return compDirection;
     }
 
-    public int getResidueEndurance(int atk){
+    public int getResidueEndurance(int atk) {
         endurance -= atk;
         return endurance;
     }
@@ -261,5 +277,17 @@ public abstract class TargetComponent extends JPanel {
 
     public boolean isAlive() {
         return alive;
+    }
+
+    public Integer getResistCount(){
+        return resistCount;
+    }
+
+    public void updateResistCount(int value){
+        resistCount = value;
+    }
+
+    public void setMotionState(boolean motionState){
+        this.motionState = motionState;
     }
 }
