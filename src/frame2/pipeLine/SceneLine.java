@@ -95,4 +95,8 @@ public class SceneLine {
     public static void pauseTimer() {
         GLOBAL_TIMER.stop();
     }
+
+    public static void resetTimer() {
+        GLOBAL_TIMER.start();
+    }
 }

@@ -112,6 +112,11 @@ public class TowerLine {
     public static void pauseTimer() {
         GLOBAL_TIMER.stop();
     }
+
+    public static void resetTimer() {
+        GLOBAL_TIMER.start();
+    }
+
     public static Map<Direction, TowerComponent> getTowerComponentMap() {
         return componentsMap;
     }

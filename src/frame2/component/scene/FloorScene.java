@@ -1,5 +1,6 @@
 package frame2.component.scene;
 
+import entity.Direction;
 import frame2.component.SceneComponent;
 
 import java.awt.*;
@@ -9,9 +10,23 @@ import static frame2.common.ComponentConstant.UNIT_WIDTH;
 
 public class FloorScene extends SceneComponent {
 
+    private Direction compLocation = new Direction(0, 0, -1);
+
     public FloorScene() {
         super();
+        setBackground(new Color(255, 255, 255, 229));
         setBounds(0, 0, UNIT_WIDTH, UNIT_HEIGHT);
+    }
+
+    public FloorScene(int i, int j) {
+        super();
+        setBackground(new Color(255, 255, 255, 229));
+        setBounds(0, 0, UNIT_WIDTH, UNIT_HEIGHT);
+        compLocation = new Direction(i, j, -1);
+    }
+
+    public Direction getCompLocation() {
+        return compLocation;
     }
 
 

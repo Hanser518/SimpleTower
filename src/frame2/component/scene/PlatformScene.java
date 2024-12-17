@@ -16,11 +16,21 @@ import static frame2.common.FrameConstant.MAIN_LAYER;
 
 public class PlatformScene extends SceneComponent {
 
+    private Direction compLocation = new Direction(0, 0, -1);
+
     public PlatformScene() {
         super();
         setBackground(new Color(71, 74, 84));
         setBounds(0, 0, UNIT_WIDTH, UNIT_HEIGHT);
         addRightClickMenu(this);
+    }
+
+    public PlatformScene(int i, int j) {
+        super();
+        setBackground(new Color(71, 74, 84));
+        setBounds(0, 0, UNIT_WIDTH, UNIT_HEIGHT);
+        addRightClickMenu(this);
+        compLocation = new Direction(i, j, -1);
     }
 
     @Override
@@ -38,6 +48,10 @@ public class PlatformScene extends SceneComponent {
         for (int i = 0; i < 3; i++) {
             g2d.drawRect(i * steps, i * steps, width - 2 * i * steps, height - 2 * i * steps);
         }
+    }
+
+    public Direction getCompLocation() {
+        return compLocation;
     }
 
 

@@ -58,8 +58,8 @@ public class ParticleLightingEffect extends EffectComponent {
 
     protected void subRegister(JLayeredPane container, int x, int y) {
         this.container = container;
-        int compWidth = interaction1.getWidth() / 2;
-        int compHeight = interaction1.getHeight() / 2;
+        int compWidth = interaction1.getWidth() / 4;
+        int compHeight = interaction1.getHeight() / 4;
         setBounds(x, y, compWidth, compHeight);
         horizontalValue = (int) (Math.random() * 11 - 5);
         portraitValue = (int) (Math.random() * 11 - 5);

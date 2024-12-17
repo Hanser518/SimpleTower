@@ -34,16 +34,17 @@ public class ResistEffect extends EffectComponent {
 
     @Override
     public void incident() {
-        if (!target.isAlive() || !target.getCompDirection().equals(tower.getCompLocation())) {
-            System.out.println("out of range");
+        // 目标死亡或超出范围
+        if (!target.isAlive() || !target.getCompDirection().equals(tower.getCompLocation()) || !tower.isAlive()) {
             if (init) {
                 int resistRequire = target.getResistCount();
                 tower.updateResistCount(resistRequire);
+                target.setMotionState(true);
             }
             EffectLine.addToRemoveComponents(this);
             return;
         }
-
+        // 初始化效果
         if (!init) {
             int resistRequire = target.getResistCount();
             int resistCount = tower.getResistCount();
@@ -52,6 +53,7 @@ public class ResistEffect extends EffectComponent {
                 tower.updateResistCount(-resistRequire);
             }
         } else {
+            // 奏效
             boolean alive = tower.isAlive();
             target.setMotionState(!alive);
         }

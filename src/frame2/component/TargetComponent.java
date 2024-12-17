@@ -1,6 +1,7 @@
 package frame2.component;
 
 import entity.Direction;
+import frame2.component.effect.ParticleBrokenEffect;
 import frame2.component.effect.ResistEffect;
 import frame2.pipeLine.TargetLine;
 import frame2.pipeLine.TowerLine;
@@ -183,6 +184,8 @@ public abstract class TargetComponent extends JPanel {
     public void incident() {
         if (endurance <= 0) {
             TargetLine.addToRemoveComponents(this);
+            ParticleBrokenEffect PBE = new ParticleBrokenEffect(this);
+            PBE.register(getContainer());
             alive = false;
         }
         if (motionState) {
@@ -191,8 +194,6 @@ public abstract class TargetComponent extends JPanel {
     }
 
     protected void motionEvent() {
-        // 检查阻挡情况
-        checkResist();
         // 获取当前坐标
         Point location = getLocation();
         // 获取移动方向
@@ -225,6 +226,8 @@ public abstract class TargetComponent extends JPanel {
                 updatePath();
             }
         }
+        // 检查阻挡情况
+        checkResist();
     }
 
     protected void checkResist() {

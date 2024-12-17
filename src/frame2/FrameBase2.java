@@ -1,8 +1,11 @@
 package frame2;
 
+import frame2.common.ComponentConstant;
+import frame2.component.scene.CandidateScene;
 import frame2.component.scene.RouteScene;
 import frame2.component.scene.StageScene;
 import frame2.component.target.GroundTarget;
+import frame2.component.tower.LightningTower;
 import frame2.pipeLine.EffectLine;
 import frame2.pipeLine.SceneLine;
 import frame2.pipeLine.TargetLine;
@@ -12,6 +15,7 @@ import javax.swing.*;
 
 import java.awt.*;
 
+import static frame2.common.ComponentConstant.CANDIDATE_LIST;
 import static frame2.common.FrameConstant.*;
 
 public class FrameBase2 {
@@ -57,7 +61,11 @@ public class FrameBase2 {
     }
 
     private void example() {
+
         StageScene SC = new StageScene(10, 7);
+        ComponentConstant.CANDIDATE = new CandidateScene(SC);
+        SC.register(MAIN_LAYER);
+
         RouteScene RC = new RouteScene(SC.getSceneMatrix());
         for (int i = 0; i < 10; i++) {
             RC.addTarget(new GroundTarget(), null);
@@ -70,6 +78,9 @@ public class FrameBase2 {
         }
         RC2.register(MAIN_LAYER, new Point(SC.getSceneMatrix().length - 2, 1), new Point(1, SC.getSceneMatrix()[0].length - 2));
 
+        for (int i = 0;i < 24;i ++){
+            CANDIDATE_LIST.add(new LightningTower());
+        }
     }
 
 }

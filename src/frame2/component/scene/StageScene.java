@@ -1,6 +1,7 @@
 package frame2.component.scene;
 
 import entity.Direction;
+import frame2.common.ComponentConstant;
 import frame2.component.SceneComponent;
 import frame2.component.effect.ParticleBrokenEffect;
 import frame2.component.tower.LightningTower;
@@ -40,6 +41,7 @@ public class StageScene extends SceneComponent {
 
     public StageScene(int width, int height) {
         super();
+        setBackground(new Color(147, 23, 37, 0));
         // 初始化矩阵
         initMatrix(width, height);
         initContent();
@@ -47,7 +49,7 @@ public class StageScene extends SceneComponent {
 
     @Override
     public void incident() {
-
+        container.repaint();
     }
 
     @Override
@@ -80,9 +82,9 @@ public class StageScene extends SceneComponent {
                     }
                 }
                 if (sceneMatrix[i][j] == 1) {
-                    panelMatrix[i][j] = new PlatformScene();
+                    panelMatrix[i][j] = new PlatformScene(i, j);
                 } else {
-                    panelMatrix[i][j] = new FloorScene();
+                    panelMatrix[i][j] = new FloorScene(i, j);
                 }
                 addTouchAction(panelMatrix[i][j], i, j);
                 panelMatrix[i][j].setLocation(i * UNIT_WIDTH, j * UNIT_HEIGHT);
@@ -101,8 +103,9 @@ public class StageScene extends SceneComponent {
                     ParticleBrokenEffect PBE = new ParticleBrokenEffect(comp);
                     PBE.register(MAIN_LAYER);
 
-                    LightningTower LT = new LightningTower();
-                    LT.register(MAIN_LAYER, new Direction(i, j, 1));
+//                    LightningTower LT = new LightningTower();
+//                    LT.register(MAIN_LAYER, new Direction(i, j, 1));
+                    ComponentConstant.CANDIDATE.register(MAIN_LAYER, comp);
                 }
             }
         });

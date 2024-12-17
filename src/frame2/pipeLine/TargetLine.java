@@ -65,7 +65,7 @@ public class TargetLine {
 
     public static void motion() {
         // 统一更新所有组件的位置
-        for (JPanel component : components) {
+        for (TargetComponent component : components) {
             try {
                 Method componentMotion = component.getClass().getMethod("incident");
                 componentMotion.invoke(component);
@@ -73,7 +73,7 @@ public class TargetLine {
                 System.out.println(COUNT + "_TARGET-ERROR: " + e);
             }
         }
-        for (JPanel component : removeComponents) {
+        for (TargetComponent component : removeComponents) {
             try {
                 Method getContainer = component.getClass().getMethod("getContainer");
                 JLayeredPane container = (JLayeredPane) getContainer.invoke(component);
@@ -108,6 +108,10 @@ public class TargetLine {
 
     public static void pauseTimer() {
         GLOBAL_TIMER.stop();
+    }
+
+    public static void resetTimer() {
+        GLOBAL_TIMER.start();
     }
 
     public static Map<Direction, TargetComponent> getTargetComponentMap() {

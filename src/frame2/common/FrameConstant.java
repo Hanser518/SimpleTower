@@ -12,7 +12,7 @@ public class FrameConstant {
     /**
      * 缩放系数
      */
-    public static Double SCREEN_RATE = 0.35;
+    public static Double SCREEN_RATE = 0.75;
 
     /**
      * 屏幕宽度
@@ -53,4 +53,9 @@ public class FrameConstant {
      * effect component layer
      */
     public static int EFFECT_LAYER = 5;
+
+    /**
+     * special component layer
+     */
+    public static int SPECIAL_LAYER = 10;
 }

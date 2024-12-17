@@ -8,6 +8,7 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,7 +116,6 @@ public abstract class TowerComponent extends JPanel {
                 return false;
             }
         });
-        addRightClickMenu(this);
     }
 
     /**
@@ -127,10 +127,16 @@ public abstract class TowerComponent extends JPanel {
     public void register(JLayeredPane container, Direction compLocation) {
         this.container = container;
         this.compLocation = compLocation;
+        setBounds(0, 0, UNIT_WIDTH, UNIT_WIDTH);
         setLocation(compLocation.x * UNIT_WIDTH, (compLocation.y + 1) * UNIT_HEIGHT - this.getHeight());
         updateSelectRangeList();
         container.add(this, COMPONENT_LAYER);
         TowerLine.addToPrepareComponents(this);
+        MouseListener[] listener = this.getMouseListeners();
+        for (MouseListener ls : listener){
+            this.removeMouseListener(ls);
+        }
+        addRightClickMenu(this);
     }
 
     /**
@@ -214,6 +220,7 @@ public abstract class TowerComponent extends JPanel {
         JMenuItem deleteItem = new JMenuItem("REMOVE");
         deleteItem.addActionListener(e -> {
             // 从面板中移除 JLabel
+            comp.alive = false;
             TowerLine.addToRemoveComponents(comp);
             comp.container.remove(comp);
         });

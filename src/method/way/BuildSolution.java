@@ -149,13 +149,83 @@ public class BuildSolution {
                 ny += 1;
             }
             default -> {
-                return getNextPointDefault(location, dir);
+                return getNextPoint12(location, dir);
             }
         }
         return new Direction(nx, ny, dir);
     }
 
-    public static Direction getNextPointDefault(Point location, int dir){
-        return null;
+    public static Direction getNextPoint12(Point location, int dir){
+        int nx = location.x;
+        int ny = location.y;
+        switch (dir) {
+            case 8 -> ny -= 2;
+            case 9 -> nx += 2;
+            case 10 -> ny += 2;
+            case 11 -> nx -= 2;
+            default -> {
+                return getNextPoint24(location, dir);
+            }
+        }
+        return new Direction(nx, ny, dir);
+    }
+
+    public static Direction getNextPoint24(Point location, int dir){
+        int nx = location.x;
+        int ny = location.y;
+        switch (dir) {
+            case 12 -> {
+                ny -= 2;
+                nx += 2;
+            }
+            case 13 -> {
+                nx += 2;
+                ny += 2;
+            }
+            case 14 -> {
+                ny += 2;
+                nx -= 2;
+            }
+            case 15 -> {
+                nx -= 2;
+                ny -= 2;
+            }
+            case 16 -> {
+                nx += 1;
+                ny -= 2;
+            }
+            case 17 -> {
+                nx += 2;
+                ny -= 1;
+            }
+            case 18 -> {
+                nx += 2;
+                ny += 1;
+            }
+            case 19 -> {
+                nx += 1;
+                ny += 2;
+            }
+            case 20 -> {
+                nx -= 1;
+                ny += 2;
+            }
+            case 21 -> {
+                nx -= 2;
+                ny += 1;
+            }
+            case 22 -> {
+                nx -= 2;
+                ny -= 1;
+            }
+            case 23 -> {
+                nx -= 1;
+                ny -= 2;
+            }
+            default -> {
+                return new Direction(nx, ny, dir);
+            }
+        }
+        return new Direction(nx, ny, dir);
     }
 }
